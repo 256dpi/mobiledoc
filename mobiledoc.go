@@ -11,8 +11,8 @@ type Map = map[string]interface{}
 
 // DefaultMarkups defines the default expected markups with the tag as the key
 // and a map of attributes and validator functions.
-var DefaultMarkups = map[string]map[string]func(string) bool{
-	"a":      {"href": func(string) bool { return true }},
+var DefaultMarkups = map[string]func(Map) bool{
+	"a":      func(Map) bool { return true },
 	"b":      nil,
 	"code":   nil,
 	"em":     nil,

@@ -6,6 +6,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//func TestValidateJSON(t *testing.T) {
+//	var doc Map
+//	err := json.Unmarshal([]byte(`{
+//		"version": "0.3.1",
+//		"markups": [
+//			["b"],
+//			["i"]
+//		],
+//		"atoms": [
+//			["mention", "@bob", { "id": 42 }],
+//	    	["mention", "@tom", { "id": 12 }]
+//		],
+//	  	"sections": [
+//	    	[1, "p", [
+//	      	[0, [], 0, "Example"],
+//	      	[0, [0], 1, "Example"],
+//	      	[0, [1], 0, "Example"],
+//	      	[0, [], 1, "Example"],
+//	      	[0, [1, 0], 1, "Example"],
+//	      	[0, [], 1, "Example"]
+//	    ]],
+//	    [1, "p", [
+//			[1, [], 0, 0],
+//	      	[1, [0], 1, 1]
+//	    ]]
+//	  ]
+//	}`), &doc)
+//	assert.NoError(t, err)
+//
+//	v := NewValidator()
+//	v.Atoms["mention"] = func(s string, ms Map) bool {
+//		return true
+//	}
+//
+//	assert.NoError(t, v.Validate(doc))
+//}
+
 func TestParse(t *testing.T) {
 	in := Map{
 		"version": Version,
