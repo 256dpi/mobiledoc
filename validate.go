@@ -23,11 +23,11 @@ type Validator struct {
 
 	// Atoms defines the expected atoms with the name as the key and a validator
 	// function.
-	Atoms map[string]func(string, M) bool
+	Atoms map[string]func(string, Map) bool
 
 	// Cards defines the expected cards with the name as the key and a validator
 	// function.
-	Cards map[string]func(M) bool
+	Cards map[string]func(Map) bool
 }
 
 // NewValidator creates a validator that validates the mobiledoc standard.
@@ -37,13 +37,13 @@ func NewValidator() *Validator {
 		ListSections:   DefaultListSections,
 		ImageSection:   DefaultImageSection,
 		Markups:        DefaultMarkups,
-		Atoms:          make(map[string]func(string, M) bool),
-		Cards:          make(map[string]func(M) bool),
+		Atoms:          make(map[string]func(string, Map) bool),
+		Cards:          make(map[string]func(Map) bool),
 	}
 }
 
 // Validate will walk the specified mobiledoc and check if it is valid.
-func (v *Validator) Validate(doc M) error {
+func (v *Validator) Validate(doc Map) error {
 	// check version
 	if version, ok := doc["version"]; !ok || version != "0.3.1" {
 		return fmt.Errorf("invalid mobiledoc version")
@@ -55,7 +55,7 @@ func (v *Validator) Validate(doc M) error {
 	// check markups
 	if _markups, ok := doc["markups"]; ok {
 		// coerce value
-		markups, ok := _markups.(A)
+		markups, ok := _markups.(List)
 		if !ok {
 			return fmt.Errorf("invalid markups definition")
 		}
@@ -66,7 +66,7 @@ func (v *Validator) Validate(doc M) error {
 		// validate markups
 		for _, _markup := range markups {
 			// coerce value
-			markup, ok := _markup.(A)
+			markup, ok := _markup.(List)
 			if !ok {
 				return fmt.Errorf("invalid markups definition")
 			}
@@ -85,7 +85,7 @@ func (v *Validator) Validate(doc M) error {
 	// check atoms
 	if value, ok := doc["atoms"]; ok {
 		// coerce value
-		atoms, ok := value.(A)
+		atoms, ok := value.(List)
 		if !ok {
 			return fmt.Errorf("invalid atoms definition")
 		}
@@ -96,7 +96,7 @@ func (v *Validator) Validate(doc M) error {
 		// validate atom
 		for _, _atom := range atoms {
 			// coerce value
-			atom, ok := _atom.(A)
+			atom, ok := _atom.(List)
 			if !ok {
 				return fmt.Errorf("invalid atoms definition")
 			}
@@ -115,7 +115,7 @@ func (v *Validator) Validate(doc M) error {
 	// check cards
 	if value, ok := doc["cards"]; ok {
 		// coerce value
-		cards, ok := value.(A)
+		cards, ok := value.(List)
 		if !ok {
 			return fmt.Errorf("invalid cards definition")
 		}
@@ -126,7 +126,7 @@ func (v *Validator) Validate(doc M) error {
 		// validate cards
 		for _, _card := range cards {
 			// coerce value
-			card, ok := _card.(A)
+			card, ok := _card.(List)
 			if !ok {
 				return fmt.Errorf("invalid cards definition")
 			}
@@ -142,7 +142,7 @@ func (v *Validator) Validate(doc M) error {
 	// check sections
 	if value, ok := doc["sections"]; ok {
 		// coerce value
-		sections, ok := value.(A)
+		sections, ok := value.(List)
 		if !ok {
 			return fmt.Errorf("invalid sections definition")
 		}
@@ -150,7 +150,7 @@ func (v *Validator) Validate(doc M) error {
 		// validate sections
 		for _, _section := range sections {
 			// coerce value
-			section, ok := _section.(A)
+			section, ok := _section.(List)
 			if !ok {
 				return fmt.Errorf("invalid sections definition")
 			}
@@ -167,7 +167,7 @@ func (v *Validator) Validate(doc M) error {
 }
 
 // ValidateMarkup will validate a single markup.
-func (v *Validator) ValidateMarkup(markup A) error {
+func (v *Validator) ValidateMarkup(markup List) error {
 	// validate length
 	if len(markup) == 0 || len(markup) > 2 {
 		return fmt.Errorf("invalid markup definition")
@@ -191,7 +191,7 @@ func (v *Validator) ValidateMarkup(markup A) error {
 	}
 
 	// get attributes
-	attributes, ok := markup[1].(A)
+	attributes, ok := markup[1].(List)
 	if !ok {
 		return fmt.Errorf("invalid markup definition")
 	}
@@ -226,7 +226,7 @@ func (v *Validator) ValidateMarkup(markup A) error {
 }
 
 // ValidateAtom will validate a single atom.
-func (v *Validator) ValidateAtom(atom A) error {
+func (v *Validator) ValidateAtom(atom List) error {
 	// validate length
 	if len(atom) == 0 || len(atom) > 3 {
 		return fmt.Errorf("invalid atom definition")
@@ -246,7 +246,7 @@ func (v *Validator) ValidateAtom(atom A) error {
 
 	// prepare text and payload
 	var text string
-	var payload M
+	var payload Map
 
 	// get text
 	if len(atom) > 1 {
@@ -258,7 +258,7 @@ func (v *Validator) ValidateAtom(atom A) error {
 
 	// get payload
 	if len(atom) > 2 {
-		payload, ok = atom[2].(M)
+		payload, ok = atom[2].(Map)
 		if !ok {
 			return fmt.Errorf("invalid atom definition")
 		}
@@ -273,7 +273,7 @@ func (v *Validator) ValidateAtom(atom A) error {
 }
 
 // ValidateCard will validate a single card.
-func (v *Validator) ValidateCard(card A) error {
+func (v *Validator) ValidateCard(card List) error {
 	// validate length
 	if len(card) == 0 || len(card) > 2 {
 		return fmt.Errorf("invalid card definition")
@@ -292,11 +292,11 @@ func (v *Validator) ValidateCard(card A) error {
 	}
 
 	// prepare payload
-	var payload M
+	var payload Map
 
 	// get payload
 	if len(card) > 1 {
-		payload, ok = card[1].(M)
+		payload, ok = card[1].(Map)
 		if !ok {
 			return fmt.Errorf("invalid card definition")
 		}
@@ -311,15 +311,21 @@ func (v *Validator) ValidateCard(card A) error {
 }
 
 // ValidateSection will validate a single section.
-func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards int) error {
+func (v *Validator) ValidateSection(section List, numMarkups, numAtoms, numCards int) error {
 	// validate length
 	if len(section) == 0 {
 		return fmt.Errorf("invalid section definition")
 	}
 
-	// get type
-	typ, ok := toInt(section[0])
+	// get section type
+	_typ, ok := toInt(section[0])
 	if !ok {
+		return fmt.Errorf("invalid section definition")
+	}
+
+	// check section type
+	typ := SectionType(_typ)
+	if !typ.Valid() {
 		return fmt.Errorf("invalid section definition")
 	}
 
@@ -333,13 +339,13 @@ func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards in
 		return v.ValidateListSection(section, numMarkups, numAtoms)
 	case CardSection:
 		return v.ValidateCardSection(section, numCards)
-	default:
-		return fmt.Errorf("invalid section definition")
 	}
+
+	return nil
 }
 
 // ValidateMarkupSection validates a single markup section.
-func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
+func (v *Validator) ValidateMarkupSection(section List, numMarkups, numAtoms int) error {
 	// validate length
 	if len(section) != 3 {
 		return fmt.Errorf("invalid markup section definition")
@@ -357,7 +363,7 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 	}
 
 	// get items
-	items, ok := section[2].(A)
+	items, ok := section[2].(List)
 	if !ok {
 		return fmt.Errorf("invalid markup section definition")
 	}
@@ -368,7 +374,7 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 	// validate markers
 	for _, _marker := range items {
 		// coerce value
-		marker, ok := _marker.(A)
+		marker, ok := _marker.(List)
 		if !ok {
 			return fmt.Errorf("invalid markup section definition")
 		}
@@ -385,7 +391,7 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 }
 
 // ValidateImageSection validates a single image section.
-func (v *Validator) ValidateImageSection(image A) error {
+func (v *Validator) ValidateImageSection(image List) error {
 	// check availability
 	if v.ImageSection == nil {
 		return fmt.Errorf("invalid image section")
@@ -411,7 +417,7 @@ func (v *Validator) ValidateImageSection(image A) error {
 }
 
 // ValidateListSection validates a single list section.
-func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error {
+func (v *Validator) ValidateListSection(list List, numMarkups, numAtoms int) error {
 	// validate length
 	if len(list) != 3 {
 		return fmt.Errorf("invalid list section definition")
@@ -429,7 +435,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 	}
 
 	// get items
-	items, ok := list[2].(A)
+	items, ok := list[2].(List)
 	if !ok {
 		return fmt.Errorf("invalid list section definition")
 	}
@@ -437,7 +443,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 	// validate items
 	for _, _item := range items {
 		// coerce value
-		item, ok := _item.(A)
+		item, ok := _item.(List)
 		if !ok {
 			return fmt.Errorf("invalid list section definition")
 		}
@@ -448,7 +454,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 		// validate markers
 		for _, _marker := range item {
 			// coerce value
-			marker, ok := _marker.(A)
+			marker, ok := _marker.(List)
 			if !ok {
 				return fmt.Errorf("invalid list section definition")
 			}
@@ -466,7 +472,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 }
 
 // ValidateCardSection validates a single card section.
-func (v *Validator) ValidateCardSection(card A, numCards int) error {
+func (v *Validator) ValidateCardSection(card List, numCards int) error {
 	// validate length
 	if len(card) != 2 {
 		return fmt.Errorf("invalid card section definition")
@@ -487,25 +493,26 @@ func (v *Validator) ValidateCardSection(card A, numCards int) error {
 }
 
 // ValidateMarker validates a single marker.
-func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups int) (int, error) {
+func (v *Validator) ValidateMarker(marker List, numMarkups, numAtoms, openMarkups int) (int, error) {
 	// validate length
 	if len(marker) != 4 {
 		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// get marker type
-	typ, ok := toInt(marker[0])
+	_typ, ok := toInt(marker[0])
 	if !ok {
 		return 0, fmt.Errorf("invalid marker definition")
 	}
 
-	// check type
-	if typ != TextMarker && typ != AtomMarker {
+	// check marker type
+	typ := MarkerType(_typ)
+	if !typ.Valid() {
 		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// get opened markups
-	openedMarkups, ok := marker[1].(A)
+	openedMarkups, ok := marker[1].(List)
 	if !ok {
 		return 0, fmt.Errorf("invalid marker definition")
 	}

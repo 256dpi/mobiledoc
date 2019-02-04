@@ -30,5 +30,17 @@ func toInt(v interface{}) (int, bool) {
 		return int(f), true
 	}
 
+	// check MarkerType (tests)
+	mt, ok := v.(MarkerType)
+	if ok {
+		return int(mt), true
+	}
+
+	// check SectionType (tests)
+	st, ok := v.(SectionType)
+	if ok {
+		return int(st), true
+	}
+
 	return 0, false
 }

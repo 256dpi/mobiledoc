@@ -1,10 +1,10 @@
 package mobiledoc
 
-// A is a short-hand for an array of interfaces.
-type A = []interface{}
+// List is a general purpose list.
+type List = []interface{}
 
-// M is a short-hand for map of interfaces.
-type M = map[string]interface{}
+// Map is a general purpose map.
+type Map = map[string]interface{}
 
 // DefaultMarkups defines the default expected markups with the tag as the key
 // and a map of attributes and validator functions.
@@ -21,13 +21,21 @@ var DefaultMarkups = map[string]map[string]func(string) bool{
 	"u":      nil,
 }
 
+// SectionType defines a section type.
+type SectionType int
+
 // The available section identifiers.
 const (
-	MarkupSection = 1
-	ImageSection  = 2
-	ListSection   = 3
-	CardSection   = 10
+	MarkupSection SectionType = 1
+	ImageSection  SectionType = 2
+	ListSection   SectionType = 3
+	CardSection   SectionType = 10
 )
+
+// Valid returns whether the section type is valid.
+func (t SectionType) Valid() bool {
+	return t == MarkupSection || t == ImageSection || t == ListSection || t == CardSection
+}
 
 // DefaultMarkupSections defines the default markup sections.
 var DefaultMarkupSections = []string{"aside", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6", "p"}
@@ -38,8 +46,16 @@ var DefaultListSections = []string{"ul", "ol"}
 // DefaultImageSection defines the default image section validator.
 var DefaultImageSection = func(string) bool { return true }
 
+// MarkerType defines a marker type.
+type MarkerType int
+
 // The available marker identifiers.
 const (
-	TextMarker = 0
-	AtomMarker = 1
+	TextMarker MarkerType = 0
+	AtomMarker MarkerType = 1
 )
+
+// Valid returns whether the marker type is valid.
+func (t MarkerType) Valid() bool {
+	return t == TextMarker || t == AtomMarker
+}
