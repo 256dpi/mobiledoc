@@ -48,7 +48,7 @@ func TestHTMLRenderer(t *testing.T) {
 			},
 			{
 				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Text: "foo"},
-				{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
+				{Type: TextMarker, ClosedMarkups: 1, Text: "<foo>"},
 			},
 		}},
 		{Type: 10, Card: &doc.Cards[1]},
@@ -72,7 +72,7 @@ func TestHTMLRenderer(t *testing.T) {
 		return err
 	}
 
-	out := `<div>card1</div><p>foo<b>foo</b><i>foofoo</i><i><a href="http://example.com">foo</a>foo</i></p><p><span class="atom1">foo</span><b><span class="atom2">foo</span><span class="atom1">foo</span></b></p><img src="http://example.com/foo.png"><ul><li>foo<b>foo</b></li><li><b>foofoo</b></li></ul><div>card2</div>`
+	out := `<div>card1</div><p>foo<b>foo</b><i>foofoo</i><i><a href="http://example.com">foo</a>foo</i></p><p><span class="atom1">foo</span><b><span class="atom2">foo</span><span class="atom1">foo</span></b></p><img src="http://example.com/foo.png"><ul><li>foo<b>foo</b></li><li><b>foo&lt;foo&gt;</b></li></ul><div>card2</div>`
 
 	buf := &bytes.Buffer{}
 	err := r.Render(buf, doc)
