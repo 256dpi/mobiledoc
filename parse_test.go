@@ -1,47 +1,108 @@
 package mobiledoc
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-//func TestValidateJSON(t *testing.T) {
-//	var doc Map
-//	err := json.Unmarshal([]byte(`{
-//		"version": "0.3.1",
-//		"markups": [
-//			["b"],
-//			["i"]
-//		],
-//		"atoms": [
-//			["mention", "@bob", { "id": 42 }],
-//	    	["mention", "@tom", { "id": 12 }]
-//		],
-//	  	"sections": [
-//	    	[1, "p", [
-//	      	[0, [], 0, "Example"],
-//	      	[0, [0], 1, "Example"],
-//	      	[0, [1], 0, "Example"],
-//	      	[0, [], 1, "Example"],
-//	      	[0, [1, 0], 1, "Example"],
-//	      	[0, [], 1, "Example"]
-//	    ]],
-//	    [1, "p", [
-//			[1, [], 0, 0],
-//	      	[1, [0], 1, 1]
-//	    ]]
-//	  ]
-//	}`), &doc)
-//	assert.NoError(t, err)
-//
-//	v := NewDefaultValidator()
-//	v.Atoms["mention"] = func(s string, ms Map) bool {
-//		return true
-//	}
-//
-//	assert.NoError(t, v.Validate(doc))
-//}
+func TestValidateJSON(t *testing.T) {
+	var in Map
+	err := json.Unmarshal([]byte(`{
+		"version":"0.3.1",
+		"markups":[
+			["b"],
+			["i"],
+			["a",["href","http://example.com"]]
+		],
+		"atoms":[
+			["atom1","foo",{"bar":42}],
+			["atom2","foo",{"bar":24}]
+		],
+		"cards":[
+			["card1",{"foo":42}],
+			["card2",{"foo":42}]
+		],
+		"sections":[
+			[10,0],
+			[1,"p",[
+				[0,[],0,"foo"],
+				[0,[0],1,"foo"],
+				[0,[1],0,"foo"],
+				[0,[],1,"foo"],
+				[0,[1,2],1,"foo"],
+				[0,[],1,"foo"]
+			]],
+			[1,"p",[
+				[1,[],0,0],
+				[1,[0],0,1],
+				[1,[],1,0]
+			]],
+			[2,"http://example.com/foo.png"],
+			[3,"ul",[
+				[
+					[0,[],0,"foo"],
+					[0,[0],1,"foo"]
+				],[
+					[0,[0],0,"foo"],
+					[0,[],1,"foo"]
+				]
+			]],
+			[10,1]
+		]
+	}`), &in)
+	assert.NoError(t, err)
+
+	out := Document{
+		Version: Version,
+		Markups: []Markup{
+			{Tag: "b"},
+			{Tag: "i"},
+			{Tag: "a", Attributes: Map{"href": "http://example.com"}},
+		},
+		Atoms: []Atom{
+			{Name: "atom1", Text: "foo", Payload: Map{"bar": float64(42)}},
+			{Name: "atom2", Text: "foo", Payload: Map{"bar": float64(24)}},
+		},
+		Cards: []Card{
+			{Name: "card1", Payload: Map{"foo": float64(42)}},
+			{Name: "card2", Payload: Map{"foo": float64(42)}},
+		},
+	}
+	out.Sections = []Section{
+		{Type: CardSection, Card: &out.Cards[0]},
+		{Type: MarkupSection, Tag: "p", Markers: []Marker{
+			{Type: TextMarker, Text: "foo"},
+			{Type: TextMarker, OpenMarkups: []*Markup{&out.Markups[0]}, ClosedMarkups: 1, Text: "foo"},
+			{Type: TextMarker, OpenMarkups: []*Markup{&out.Markups[1]}, Text: "foo"},
+			{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
+			{Type: TextMarker, OpenMarkups: []*Markup{&out.Markups[1], &out.Markups[2]}, ClosedMarkups: 1, Text: "foo"},
+			{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
+		}},
+		{Type: MarkupSection, Tag: "p", Markers: []Marker{
+			{Type: AtomMarker, Atom: &out.Atoms[0]},
+			{Type: AtomMarker, OpenMarkups: []*Markup{&out.Markups[0]}, Atom: &out.Atoms[1]},
+			{Type: AtomMarker, ClosedMarkups: 1, Atom: &out.Atoms[0]},
+		}},
+		{Type: ImageSection, Source: "http://example.com/foo.png"},
+		{Type: ListSection, Tag: "ul", Items: [][]Marker{
+			{
+				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
+				{Type: TextMarker, OpenMarkups: []*Markup{&out.Markups[0]}, ClosedMarkups: 1, Text: "foo"},
+			},
+			{
+				{Type: TextMarker, OpenMarkups: []*Markup{&out.Markups[0]}, Text: "foo"},
+				{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
+			},
+		}},
+		{Type: 10, Card: &out.Cards[1]},
+	}
+
+	doc, err := Parse(in)
+	assert.NoError(t, err)
+	assert.Equal(t, out, doc)
+}
 
 func TestParse(t *testing.T) {
 	in := Map{
