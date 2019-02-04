@@ -35,7 +35,7 @@ import (
 //	}`), &doc)
 //	assert.NoError(t, err)
 //
-//	v := NewValidator()
+//	v := NewDefaultValidator()
 //	v.Atoms["mention"] = func(s string, ms Map) bool {
 //		return true
 //	}

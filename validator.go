@@ -4,30 +4,44 @@ import "fmt"
 
 // Validator validates a mobiledoc.
 type Validator struct {
-	// Markups defines the expected markups with the name as key and a map of
-	// attributes and validations functions.
-	Markups map[string]func(Map) bool
+	// Markups defines the allowed markups with the name as key and a
+	// attributes validator function.
+	Markups map[string]func(attributes Map) bool
 
-	// Atoms defines the expected atoms with the name as the key and a validator
+	// Atoms defines the allowed atoms with the name as the key and a validator
 	// function.
-	Atoms map[string]func(string, interface{}) bool
+	Atoms map[string]func(name string, payload interface{}) bool
 
-	// Cards defines the expected cards with the name as the key and a validator
+	// Cards defines the allowed cards with the name as the key and a validator
 	// function.
-	Cards map[string]func(interface{}) bool
+	Cards map[string]func(payload interface{}) bool
 
-	// MarkupSections defines the expected markup sections.
+	// MarkupSections defines the allowed markup sections.
 	MarkupSections []string
 
-	// ListSections defines the expected list sections.
+	// ListSections defines the allowed list sections.
 	ListSections []string
 
-	// ImageSection defines whether the image section is allowed.
-	ImageSection func(string) bool
+	// ImageSection defines whether the image section is allowed when a source
+	// validator is set.
+	ImageSection func(source string) bool
 }
 
-// NewValidator creates a validator that validates the mobiledoc standard.
-func NewValidator() *Validator {
+// NewEmptyValidator creates an empty validator.
+func NewEmptyValidator() *Validator {
+	return &Validator{
+		Markups:        make(map[string]func(Map) bool),
+		Atoms:          make(map[string]func(string, interface{}) bool),
+		Cards:          make(map[string]func(interface{}) bool),
+		MarkupSections: nil,
+		ListSections:   nil,
+		ImageSection:   nil,
+	}
+}
+
+// NewDefaultValidator creates a validator that validates the default mobiledoc
+// standard.
+func NewDefaultValidator() *Validator {
 	return &Validator{
 		Markups:        DefaultMarkups,
 		Atoms:          make(map[string]func(string, interface{}) bool),

@@ -52,7 +52,7 @@ func TestValidator(t *testing.T) {
 		{Type: 10, Card: &doc.Cards[1]},
 	}
 
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	var atom1 interface{}
 	v.Atoms["atom1"] = func(_ string, payload interface{}) bool {
@@ -79,7 +79,7 @@ func TestValidator(t *testing.T) {
 }
 
 func TestValidatorInvalidVersion(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: "foo",
@@ -88,7 +88,7 @@ func TestValidatorInvalidVersion(t *testing.T) {
 }
 
 func TestValidatorInvalidMarkup(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: Version,
@@ -112,7 +112,7 @@ func TestValidatorInvalidMarkup(t *testing.T) {
 }
 
 func TestValidatorInvalidAtom(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: Version,
@@ -146,7 +146,7 @@ func TestValidatorInvalidAtom(t *testing.T) {
 }
 
 func TestValidatorInvalidCard(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: Version,
@@ -180,7 +180,7 @@ func TestValidatorInvalidCard(t *testing.T) {
 }
 
 func TestValidatorInvalidMarkupSection(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: Version,
@@ -192,7 +192,7 @@ func TestValidatorInvalidMarkupSection(t *testing.T) {
 }
 
 func TestValidatorInvalidImageSection(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	v.ImageSection = nil
 
@@ -218,7 +218,7 @@ func TestValidatorInvalidImageSection(t *testing.T) {
 }
 
 func TestValidatorInvalidListSection(t *testing.T) {
-	v := NewValidator()
+	v := NewDefaultValidator()
 
 	err := v.Validate(Document{
 		Version: Version,
