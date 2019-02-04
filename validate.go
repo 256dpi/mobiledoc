@@ -2,6 +2,7 @@ package mobiledoc
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/asaskevich/govalidator"
 )
@@ -55,7 +56,7 @@ func NewValidator() *Validator {
 func (v *Validator) Validate(doc M) error {
 	// check version
 	if version, ok := doc["version"]; !ok || version != "0.3.1" {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid mobiledoc version")
 	}
 
 	// prepare num markups
@@ -66,7 +67,7 @@ func (v *Validator) Validate(doc M) error {
 		// coerce value
 		markups, ok := _markups.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid markups definition")
 		}
 
 		// set num
@@ -77,7 +78,7 @@ func (v *Validator) Validate(doc M) error {
 			// coerce value
 			markup, ok := _markup.(A)
 			if !ok {
-				return ErrInvalidMobileDoc
+				return fmt.Errorf("invalid markups definition")
 			}
 
 			// validate markup
@@ -96,7 +97,7 @@ func (v *Validator) Validate(doc M) error {
 		// coerce value
 		atoms, ok := value.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid atoms definition")
 		}
 
 		// set num
@@ -107,7 +108,7 @@ func (v *Validator) Validate(doc M) error {
 			// coerce value
 			atom, ok := _atom.(A)
 			if !ok {
-				return ErrInvalidMobileDoc
+				return fmt.Errorf("invalid atoms definition")
 			}
 
 			// validate atom
@@ -126,7 +127,7 @@ func (v *Validator) Validate(doc M) error {
 		// coerce value
 		cards, ok := value.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid cards definition")
 		}
 
 		// set num
@@ -137,7 +138,7 @@ func (v *Validator) Validate(doc M) error {
 			// coerce value
 			card, ok := _card.(A)
 			if !ok {
-				return ErrInvalidMobileDoc
+				return fmt.Errorf("invalid cards definition")
 			}
 
 			// validate card
@@ -153,7 +154,7 @@ func (v *Validator) Validate(doc M) error {
 		// coerce value
 		sections, ok := value.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid sections definition")
 		}
 
 		// validate sections
@@ -161,7 +162,7 @@ func (v *Validator) Validate(doc M) error {
 			// coerce value
 			section, ok := _section.(A)
 			if !ok {
-				return ErrInvalidMobileDoc
+				return fmt.Errorf("invalid sections definition")
 			}
 
 			// validate section
@@ -179,19 +180,19 @@ func (v *Validator) Validate(doc M) error {
 func (v *Validator) ValidateMarkup(markup A) error {
 	// validate length
 	if len(markup) == 0 || len(markup) > 2 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup definition")
 	}
 
 	// check tag
 	tag, ok := markup[0].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup definition")
 	}
 
 	// check tag existence
 	allowedAttributes, ok := v.Markups[tag]
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup tag")
 	}
 
 	// return if attributes are missing
@@ -202,12 +203,12 @@ func (v *Validator) ValidateMarkup(markup A) error {
 	// get attributes
 	attributes, ok := markup[1].(A)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup definition")
 	}
 
 	// check if attributes are even
 	if len(attributes)%2 != 0 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup definition")
 	}
 
 	// check attributes
@@ -216,18 +217,18 @@ func (v *Validator) ValidateMarkup(markup A) error {
 		name, ok1 := attributes[i].(string)
 		value, ok2 := attributes[i+1].(string)
 		if !ok1 || !ok2 {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid markup definition")
 		}
 
 		// get validator
 		validator, ok := allowedAttributes[name]
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid markup attribute")
 		}
 
 		// validate attribute
 		if !validator(value) {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid markup attribute")
 		}
 	}
 
@@ -238,19 +239,19 @@ func (v *Validator) ValidateMarkup(markup A) error {
 func (v *Validator) ValidateAtom(atom A) error {
 	// validate length
 	if len(atom) == 0 || len(atom) > 3 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid atom definition")
 	}
 
 	// check name
 	name, ok := atom[0].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid atom definition")
 	}
 
 	// check atom existence
 	validator, ok := v.Atoms[name]
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid atom name")
 	}
 
 	// prepare text and payload
@@ -261,7 +262,7 @@ func (v *Validator) ValidateAtom(atom A) error {
 	if len(atom) > 1 {
 		text, ok = atom[1].(string)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid atom definition")
 		}
 	}
 
@@ -269,13 +270,13 @@ func (v *Validator) ValidateAtom(atom A) error {
 	if len(atom) > 2 {
 		payload, ok = atom[2].(M)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid atom definition")
 		}
 	}
 
 	// validate atom
 	if !validator(text, payload) {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid atom text or payload")
 	}
 
 	return nil
@@ -285,19 +286,19 @@ func (v *Validator) ValidateAtom(atom A) error {
 func (v *Validator) ValidateCard(card A) error {
 	// validate length
 	if len(card) == 0 || len(card) > 2 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card definition")
 	}
 
 	// check name
 	name, ok := card[0].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card definition")
 	}
 
 	// check card existence
 	validator, ok := v.Cards[name]
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card name")
 	}
 
 	// prepare payload
@@ -307,13 +308,13 @@ func (v *Validator) ValidateCard(card A) error {
 	if len(card) > 1 {
 		payload, ok = card[1].(M)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid card definition")
 		}
 	}
 
 	// validate card
 	if !validator(payload) {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card payload")
 	}
 
 	return nil
@@ -323,13 +324,13 @@ func (v *Validator) ValidateCard(card A) error {
 func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards int) error {
 	// validate length
 	if len(section) == 0 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid section definition")
 	}
 
 	// get type
 	typ, ok := section[0].(int)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid section definition")
 	}
 
 	// run validators based on type
@@ -343,7 +344,7 @@ func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards in
 	case CardSection:
 		return v.ValidateCardSection(section, numCards)
 	default:
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid section definition")
 	}
 }
 
@@ -351,24 +352,24 @@ func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards in
 func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
 	// validate length
 	if len(section) != 3 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup section definition")
 	}
 
 	// get tag
 	tag, ok := section[1].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup section definition")
 	}
 
 	// validate tag
 	if !contains(v.MarkupSections, tag) {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup section tag")
 	}
 
 	// get items
 	items, ok := section[2].(A)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid markup section definition")
 	}
 
 	// prepare open markup counter
@@ -379,7 +380,7 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 		// coerce value
 		marker, ok := _marker.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid markup section definition")
 		}
 
 		// validate marker
@@ -397,23 +398,25 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 func (v *Validator) ValidateImageSection(image A) error {
 	// check availability
 	if !v.ImageSection {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid image section")
 	}
 
 	// validate length
 	if len(image) != 2 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid image section definition")
 	}
 
 	// get src
 	src, ok := image[1].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid image section definition")
 	}
+
+	// TODO: Make Validator configurable.
 
 	// check src
 	if !govalidator.IsURL(src) {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid image section src")
 	}
 
 	return nil
@@ -423,24 +426,24 @@ func (v *Validator) ValidateImageSection(image A) error {
 func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error {
 	// validate length
 	if len(list) != 3 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid list section definition")
 	}
 
 	// get tag
 	tag, ok := list[1].(string)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid list section definition")
 	}
 
 	// validate tag
 	if !contains(v.ListSections, tag) {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid list section tag")
 	}
 
 	// get items
 	items, ok := list[2].(A)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid list section definition")
 	}
 
 	// validate items
@@ -448,7 +451,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 		// coerce value
 		item, ok := _item.(A)
 		if !ok {
-			return ErrInvalidMobileDoc
+			return fmt.Errorf("invalid list section definition")
 		}
 
 		// prepare open markup counter
@@ -459,7 +462,7 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 			// coerce value
 			marker, ok := _marker.(A)
 			if !ok {
-				return ErrInvalidMobileDoc
+				return fmt.Errorf("invalid list section definition")
 			}
 
 			// validate marker
@@ -478,18 +481,18 @@ func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error 
 func (v *Validator) ValidateCardSection(card A, numCards int) error {
 	// validate length
 	if len(card) != 2 {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card section definition")
 	}
 
 	// get num
 	num, ok := card[1].(int)
 	if !ok {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card section definition")
 	}
 
 	// check num
 	if num >= numCards {
-		return ErrInvalidMobileDoc
+		return fmt.Errorf("invalid card section index")
 	}
 
 	return nil
@@ -499,24 +502,24 @@ func (v *Validator) ValidateCardSection(card A, numCards int) error {
 func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups int) (int, error) {
 	// validate length
 	if len(marker) != 4 {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// get marker type
 	typ, ok := marker[0].(int)
 	if !ok {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// check type
 	if typ != TextMarker && typ != AtomMarker {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// get opened markups
 	openedMarkups, ok := marker[1].(A)
 	if !ok {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// validate opened markups
@@ -524,12 +527,12 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 		// coerce value
 		markup, ok := _markup.(int)
 		if !ok {
-			return 0, ErrInvalidMobileDoc
+			return 0, fmt.Errorf("invalid marker definition")
 		}
 
 		// check markup
 		if markup >= numMarkups {
-			return 0, ErrInvalidMobileDoc
+			return 0, fmt.Errorf("invalid marker markup index")
 		}
 
 		// increment counter
@@ -539,26 +542,26 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 	// get closed markups
 	closedMarkups, ok := marker[2].(int)
 	if !ok {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// decrement counter
 	openMarkups -= closedMarkups
 	if openMarkups < 0 {
-		return 0, ErrInvalidMobileDoc
+		return 0, fmt.Errorf("invalid marker count")
 	}
 
 	// validate text marker
 	if typ == TextMarker {
 		if _, ok := marker[3].(string); !ok {
-			return 0, ErrInvalidMobileDoc
+			return 0, fmt.Errorf("invalid marker definition")
 		}
 	}
 
 	// validate atom marker
 	if typ == AtomMarker {
 		if atom, ok := marker[3].(int); !ok || atom >= numAtoms {
-			return 0, ErrInvalidMobileDoc
+			return 0, fmt.Errorf("invalid marker atom index")
 		}
 	}
 

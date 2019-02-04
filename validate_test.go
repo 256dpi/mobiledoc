@@ -23,7 +23,36 @@ func TestValidateDocument(t *testing.T) {
 	assert.NoError(t, v.Validate(M{"version": "0.3.1", "sections": A{}}))
 	assert.NoError(t, v.Validate(M{"version": "0.3.1", "cards": A{}}))
 
-	// TODO: Test full document.
+	v.Atoms["mention"] = func(s string, ms M) bool {
+		return true
+	}
+
+	doc := M{
+		"version": "0.3.1",
+		"markups": A{
+			A{"b"},
+			A{"i"},
+		},
+		"atoms": A{
+			A{"mention", "@bob", M{"id": 42}},
+			A{"mention", "@tom", M{"id": 24}},
+		},
+		"sections": A{
+			A{1, "p", A{
+				A{TextMarker, A{}, 0, "Example with no markup"},
+				A{TextMarker, A{0}, 1, "Example wrapped in b tag (opened markup #0), 1 closed markup"},
+				A{TextMarker, A{1}, 0, "Example opening i tag (opened markup with #1, 0 closed markups)"},
+				A{TextMarker, A{}, 1, "Example closing i tag (no opened markups, 1 closed markup)"},
+				A{TextMarker, A{1, 0}, 1, "Example opening i tag and b tag, closing b tag (opened markups #1 and #0, 1 closed markup [closes markup #0])"},
+				A{TextMarker, A{}, 1, "Example closing i tag, (no opened markups, 1 closed markup [closes markup #1])"},
+			}},
+			A{1, "p", A{
+				A{AtomMarker, A{}, 0, 0},
+				A{AtomMarker, A{0}, 1, 1},
+			}},
+		},
+	}
+	assert.NoError(t, v.Validate(doc))
 }
 
 func TestValidateMarkups(t *testing.T) {
