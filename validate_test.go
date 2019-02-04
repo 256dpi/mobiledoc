@@ -1,10 +1,48 @@
 package mobiledoc
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidateJSON(t *testing.T) {
+	var doc M
+	err := json.Unmarshal([]byte(`{
+		"version": "0.3.1",
+		"markups": [
+			["b"],
+			["i"]
+		],
+		"atoms": [
+			["mention", "@bob", { "id": 42 }],
+	    	["mention", "@tom", { "id": 12 }]
+		],
+	  	"sections": [
+	    	[1, "p", [
+	      	[0, [], 0, "Example"],
+	      	[0, [0], 1, "Example"],
+	      	[0, [1], 0, "Example"],
+	      	[0, [], 1, "Example"],
+	      	[0, [1, 0], 1, "Example"],
+	      	[0, [], 1, "Example"]
+	    ]],
+	    [1, "p", [
+			[1, [], 0, 0],
+	      	[1, [0], 1, 1]
+	    ]]
+	  ]
+	}`), &doc)
+	assert.NoError(t, err)
+
+	v := NewValidator()
+	v.Atoms["mention"] = func(s string, ms M) bool {
+		return true
+	}
+
+	assert.NoError(t, v.Validate(doc))
+}
 
 func TestValidateDocument(t *testing.T) {
 	v := NewValidator()
@@ -39,12 +77,12 @@ func TestValidateDocument(t *testing.T) {
 		},
 		"sections": A{
 			A{1, "p", A{
-				A{TextMarker, A{}, 0, "Example with no markup"},
-				A{TextMarker, A{0}, 1, "Example wrapped in b tag (opened markup #0), 1 closed markup"},
-				A{TextMarker, A{1}, 0, "Example opening i tag (opened markup with #1, 0 closed markups)"},
-				A{TextMarker, A{}, 1, "Example closing i tag (no opened markups, 1 closed markup)"},
-				A{TextMarker, A{1, 0}, 1, "Example opening i tag and b tag, closing b tag (opened markups #1 and #0, 1 closed markup [closes markup #0])"},
-				A{TextMarker, A{}, 1, "Example closing i tag, (no opened markups, 1 closed markup [closes markup #1])"},
+				A{TextMarker, A{}, 0, "Example"},
+				A{TextMarker, A{0}, 1, "Example"},
+				A{TextMarker, A{1}, 0, "Example"},
+				A{TextMarker, A{}, 1, "Example"},
+				A{TextMarker, A{1, 0}, 1, "Example"},
+				A{TextMarker, A{}, 1, "Example"},
 			}},
 			A{1, "p", A{
 				A{AtomMarker, A{}, 0, 0},
@@ -132,7 +170,7 @@ func TestValidateMarkupSection(t *testing.T) {
 func TestValidateImageSection(t *testing.T) {
 	v := NewValidator()
 
-	assert.Error(t, v.ValidateImageSection(A{ImageSection, "foo"}))
+	assert.NoError(t, v.ValidateImageSection(A{ImageSection, "foo"}))
 	assert.NoError(t, v.ValidateImageSection(A{ImageSection, "http://example.com/foo.png"}))
 }
 

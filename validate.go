@@ -1,16 +1,10 @@
 package mobiledoc
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
 // TODO: Allow "target" attribute for URLs?
 
 // TODO: Add parser that transforms the mobiledoc in a usable in memory layout.
-
-// ErrInvalidMobileDoc is returned if the specified mobiledoc is invalid.
-var ErrInvalidMobileDoc = errors.New("invalid mobiledoc")
 
 // Validator validates a mobiledoc.
 type Validator struct {
@@ -324,7 +318,7 @@ func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards in
 	}
 
 	// get type
-	typ, ok := section[0].(int)
+	typ, ok := toInt(section[0])
 	if !ok {
 		return fmt.Errorf("invalid section definition")
 	}
@@ -479,7 +473,7 @@ func (v *Validator) ValidateCardSection(card A, numCards int) error {
 	}
 
 	// get num
-	num, ok := card[1].(int)
+	num, ok := toInt(card[1])
 	if !ok {
 		return fmt.Errorf("invalid card section definition")
 	}
@@ -500,7 +494,7 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 	}
 
 	// get marker type
-	typ, ok := marker[0].(int)
+	typ, ok := toInt(marker[0])
 	if !ok {
 		return 0, fmt.Errorf("invalid marker definition")
 	}
@@ -519,7 +513,7 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 	// validate opened markups
 	for _, _markup := range openedMarkups {
 		// coerce value
-		markup, ok := _markup.(int)
+		markup, ok := toInt(_markup)
 		if !ok {
 			return 0, fmt.Errorf("invalid marker definition")
 		}
@@ -534,7 +528,7 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 	}
 
 	// get closed markups
-	closedMarkups, ok := marker[2].(int)
+	closedMarkups, ok := toInt(marker[2])
 	if !ok {
 		return 0, fmt.Errorf("invalid marker definition")
 	}
@@ -554,7 +548,7 @@ func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups i
 
 	// validate atom marker
 	if typ == AtomMarker {
-		if atom, ok := marker[3].(int); !ok || atom >= numAtoms {
+		if atom, ok := toInt(marker[3]); !ok || atom >= numAtoms {
 			return 0, fmt.Errorf("invalid marker atom index")
 		}
 	}

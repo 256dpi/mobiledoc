@@ -9,3 +9,17 @@ func contains(list []string, str string) bool {
 
 	return false
 }
+
+func toInt(v interface{}) (int, bool) {
+	i, ok := v.(int)
+	if ok {
+		return i, true
+	}
+
+	f, ok := v.(float64)
+	if ok {
+		return int(f), true
+	}
+
+	return 0, false
+}
