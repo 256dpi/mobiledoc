@@ -298,14 +298,8 @@ func parseSection(section List, markups []Markup, atoms []Atom, cards []Card) (S
 		return s, fmt.Errorf("invalid section definition")
 	}
 
-	// check section type
-	typ := SectionType(_typ)
-	if !typ.Valid() {
-		return s, fmt.Errorf("invalid section definition")
-	}
-
 	// run validators based on type
-	switch typ {
+	switch SectionType(_typ) {
 	case MarkupSection:
 		return parseMarkupSection(section, markups, atoms)
 	case ImageSection:
@@ -314,9 +308,9 @@ func parseSection(section List, markups []Markup, atoms []Atom, cards []Card) (S
 		return parseListSection(section, markups, atoms)
 	case CardSection:
 		return parseCardSection(section, cards)
+	default:
+		return s, fmt.Errorf("invalid section definition")
 	}
-
-	return s, nil
 }
 
 func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, error) {
@@ -331,7 +325,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	// get tag
 	tag, ok := section[1].(string)
 	if !ok {
-		return s, fmt.Errorf("invalid markup section definition")
+		return s, fmt.Errorf("invalid markup section tag")
 	}
 
 	// set tag
@@ -340,7 +334,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	// get items
 	items, ok := section[2].(List)
 	if !ok {
-		return s, fmt.Errorf("invalid markup section definition")
+		return s, fmt.Errorf("invalid markup section items")
 	}
 
 	// prepare open markup counter
@@ -404,7 +398,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	// get tag
 	tag, ok := list[1].(string)
 	if !ok {
-		return s, fmt.Errorf("invalid list section definition")
+		return s, fmt.Errorf("invalid list section tag")
 	}
 
 	// set tag
@@ -413,7 +407,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	// get items
 	items, ok := list[2].(List)
 	if !ok {
-		return s, fmt.Errorf("invalid list section definition")
+		return s, fmt.Errorf("invalid list section items")
 	}
 
 	// validate items
@@ -421,7 +415,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 		// coerce value
 		item, ok := _item.(List)
 		if !ok {
-			return s, fmt.Errorf("invalid list section definition")
+			return s, fmt.Errorf("invalid list section item")
 		}
 
 		// prepare open markup counter
@@ -439,7 +433,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 			// coerce value
 			marker, ok := _marker.(List)
 			if !ok {
-				return s, fmt.Errorf("invalid list section definition")
+				return s, fmt.Errorf("invalid list section item marker")
 			}
 
 			// validate marker

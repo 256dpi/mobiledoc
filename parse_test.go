@@ -242,3 +242,270 @@ func TestParseInvalidCard(t *testing.T) {
 	})
 	assert.Error(t, err)
 }
+
+func TestParseInvalidSection(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{false},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{-1},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidMarkupSection(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, 1, 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				1,
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{},
+			}},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidImageSection(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ImageSection},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ImageSection, 1},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidListSection(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection, 1, 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection, "ol", 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection, "ol", List{
+				1,
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection, "ol", List{
+				List{1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{ListSection, "ol", List{
+				List{
+					List{},
+				},
+			}},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidCardSection(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{CardSection},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{CardSection, false},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{CardSection, 1},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidMarker(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{false, 1, 1, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{-1, 1, 1, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, 1, 1, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, List{false}, false, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, List{0}, false, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, List{}, false, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, List{}, 1, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{TextMarker, List{}, 0, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"sections": List{
+			List{MarkupSection, "p", List{
+				List{AtomMarker, List{}, 0, 1},
+			}},
+		},
+	})
+	assert.Error(t, err)
+
+}
