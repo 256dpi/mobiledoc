@@ -101,3 +101,144 @@ func TestParse(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, doc)
 }
+
+func TestParseInvalidDocument(t *testing.T) {
+	_, err := Parse(Map{
+		"version": 1,
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": 1,
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": List{1},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"atoms":   1,
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"atoms":   List{1},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"cards":   1,
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"cards":   List{1},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version":  Version,
+		"sections": 1,
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version":  Version,
+		"sections": List{1},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidMarkups(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"markups": List{
+			List{},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": List{
+			List{1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": List{
+			List{"b", 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": List{
+			List{"b", List{1}},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"markups": List{
+			List{"b", List{1, 1}},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidAtom(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"atoms": List{
+			List{1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"atoms": List{
+			List{1, 1, 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"atoms": List{
+			List{"atom", 1, 1},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestParseInvalidCard(t *testing.T) {
+	_, err := Parse(Map{
+		"version": Version,
+		"cards": List{
+			List{1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"cards": List{
+			List{1, 1},
+		},
+	})
+	assert.Error(t, err)
+}
