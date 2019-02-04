@@ -3,6 +3,7 @@ package mobiledoc
 import (
 	"bufio"
 	"fmt"
+	"html"
 	"io"
 	"net/url"
 )
@@ -61,7 +62,7 @@ func (r *HTMLRenderer) renderSection(w *bufio.Writer, section Section) error {
 
 func (r *HTMLRenderer) renderMarkupSection(w *bufio.Writer, section Section) error {
 	// write open tag
-	_, err := w.WriteString("<" + section.Tag + ">")
+	_, err := w.WriteString(fmt.Sprintf("<%s>", section.Tag))
 	if err != nil {
 		return err
 	}
@@ -73,7 +74,7 @@ func (r *HTMLRenderer) renderMarkupSection(w *bufio.Writer, section Section) err
 	}
 
 	// write close tag
-	_, err = w.WriteString("</" + section.Tag + ">")
+	_, err = w.WriteString(fmt.Sprintf("</%s>", section.Tag))
 	if err != nil {
 		return err
 	}
@@ -186,7 +187,7 @@ func (r *HTMLRenderer) renderMarkers(w *bufio.Writer, markers []Marker) error {
 		switch marker.Type {
 		case TextMarker:
 			// write text
-			_, err := w.WriteString(marker.Text)
+			_, err := w.WriteString(html.EscapeString(marker.Text))
 			if err != nil {
 				return err
 			}
