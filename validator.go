@@ -2,6 +2,33 @@ package mobiledoc
 
 import "fmt"
 
+// Version specifies the mobiledoc version.
+const Version = "0.3.1"
+
+// DefaultMarkups defines the default expected markups with the tag as the key
+// and a map of attributes and validator functions.
+var DefaultMarkups = map[string]func(Map) bool{
+	"a":      func(Map) bool { return true },
+	"b":      nil,
+	"code":   nil,
+	"em":     nil,
+	"i":      nil,
+	"s":      nil,
+	"strong": nil,
+	"sub":    nil,
+	"sup":    nil,
+	"u":      nil,
+}
+
+// DefaultMarkupSections defines the default markup sections.
+var DefaultMarkupSections = []string{"aside", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6", "p"}
+
+// DefaultListSections defines the default list sections.
+var DefaultListSections = []string{"ul", "ol"}
+
+// DefaultImageSection defines the default image section validator.
+var DefaultImageSection = func(string) bool { return true }
+
 // Validator validates a mobiledoc.
 type Validator struct {
 	// Markups defines the allowed markups with the name as key and a

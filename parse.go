@@ -2,6 +2,32 @@ package mobiledoc
 
 import "fmt"
 
+// List is a general purpose list.
+type List = []interface{}
+
+// Map is a general purpose map.
+type Map = map[string]interface{}
+
+// SectionType defines a section type.
+type SectionType int
+
+// The available section identifiers.
+const (
+	MarkupSection SectionType = 1
+	ImageSection  SectionType = 2
+	ListSection   SectionType = 3
+	CardSection   SectionType = 10
+)
+
+// MarkerType defines a marker type.
+type MarkerType int
+
+// The available marker identifiers.
+const (
+	TextMarker MarkerType = 0
+	AtomMarker MarkerType = 1
+)
+
 // Document is a mobiledoc.
 type Document struct {
 	Version  string
@@ -496,7 +522,7 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 
 	// check marker type
 	typ := MarkerType(_typ)
-	if !typ.Valid() {
+	if typ != TextMarker && typ != AtomMarker {
 		return m, 0, fmt.Errorf("invalid marker type")
 	}
 
