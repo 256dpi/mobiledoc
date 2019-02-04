@@ -1,5 +1,8 @@
 package mobiledoc
 
+// Version specifies the mobiledoc version.
+const Version = "0.3.1"
+
 // List is a general purpose list.
 type List = []interface{}
 

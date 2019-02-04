@@ -45,7 +45,7 @@ func NewValidator() *Validator {
 // Validate will walk the specified mobiledoc and check if it is valid.
 func (v *Validator) Validate(doc Map) error {
 	// check version
-	if version, ok := doc["version"]; !ok || version != "0.3.1" {
+	if version, ok := doc["version"]; !ok || version != Version {
 		return fmt.Errorf("invalid mobiledoc version")
 	}
 

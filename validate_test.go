@@ -50,23 +50,23 @@ func TestValidateDocument(t *testing.T) {
 	assert.Error(t, v.Validate(Map{}))
 	assert.Error(t, v.Validate(Map{"version": ""}))
 	assert.Error(t, v.Validate(Map{"version": "3.1.2"}))
-	assert.NoError(t, v.Validate(Map{"version": "0.3.1"}))
+	assert.NoError(t, v.Validate(Map{"version": Version}))
 
-	assert.Error(t, v.Validate(Map{"version": "0.3.1", "markups": "foo"}))
-	assert.Error(t, v.Validate(Map{"version": "0.3.1", "atoms": "foo"}))
-	assert.Error(t, v.Validate(Map{"version": "0.3.1", "sections": "foo"}))
-	assert.Error(t, v.Validate(Map{"version": "0.3.1", "cards": "foo"}))
-	assert.NoError(t, v.Validate(Map{"version": "0.3.1", "markups": List{}}))
-	assert.NoError(t, v.Validate(Map{"version": "0.3.1", "atoms": List{}}))
-	assert.NoError(t, v.Validate(Map{"version": "0.3.1", "sections": List{}}))
-	assert.NoError(t, v.Validate(Map{"version": "0.3.1", "cards": List{}}))
+	assert.Error(t, v.Validate(Map{"version": Version, "markups": "foo"}))
+	assert.Error(t, v.Validate(Map{"version": Version, "atoms": "foo"}))
+	assert.Error(t, v.Validate(Map{"version": Version, "sections": "foo"}))
+	assert.Error(t, v.Validate(Map{"version": Version, "cards": "foo"}))
+	assert.NoError(t, v.Validate(Map{"version": Version, "markups": List{}}))
+	assert.NoError(t, v.Validate(Map{"version": Version, "atoms": List{}}))
+	assert.NoError(t, v.Validate(Map{"version": Version, "sections": List{}}))
+	assert.NoError(t, v.Validate(Map{"version": Version, "cards": List{}}))
 
 	v.Atoms["mention"] = func(s string, ms Map) bool {
 		return true
 	}
 
 	doc := Map{
-		"version": "0.3.1",
+		"version": Version,
 		"markups": List{
 			List{"b"},
 			List{"i"},

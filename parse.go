@@ -264,7 +264,7 @@ func parseCard(card List) (Card, error) {
 	c := Card{}
 
 	// validate length
-	if len(card) == 2 {
+	if len(card) != 2 {
 		return c, fmt.Errorf("invalid card definition")
 	}
 
