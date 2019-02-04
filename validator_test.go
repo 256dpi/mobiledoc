@@ -130,7 +130,7 @@ func TestValidatorInvalidAtom(t *testing.T) {
 			{Name: "x"},
 		},
 	})
-	assert.Error(t, err)
+	assert.NoError(t, err)
 
 	v.Atoms["x"] = func(s string, i interface{}) bool {
 		return false
@@ -164,7 +164,7 @@ func TestValidatorInvalidCard(t *testing.T) {
 			{Name: "x"},
 		},
 	})
-	assert.Error(t, err)
+	assert.NoError(t, err)
 
 	v.Cards["x"] = func(i interface{}) bool {
 		return false
