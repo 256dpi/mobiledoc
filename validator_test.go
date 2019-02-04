@@ -41,12 +41,12 @@ func TestValidator(t *testing.T) {
 		{Type: ImageSection, Source: "http://example.com/foo.png"},
 		{Type: ListSection, Tag: "ul", Items: [][]Marker{
 			{
-				{Type: TextMarker, OpenMarkups: []*Markup(nil), ClosedMarkups: 0, Text: "foo"},
+				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
 				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, ClosedMarkups: 1, Text: "foo"},
 			},
 			{
 				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Text: "foo"},
-				{Type: TextMarker, OpenMarkups: []*Markup(nil), ClosedMarkups: 1, Text: "foo"},
+				{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
 			},
 		}},
 		{Type: 10, Card: &doc.Cards[1]},
