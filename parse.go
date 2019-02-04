@@ -216,7 +216,7 @@ func parseMarkup(markup List) (Markup, error) {
 		// get name
 		name, ok := attributes[i].(string)
 		if !ok {
-			return m, fmt.Errorf("invalid markup definition")
+			return m, fmt.Errorf("invalid markup attributes key")
 		}
 
 		// set attribute
@@ -271,7 +271,7 @@ func parseCard(card List) (Card, error) {
 	// check name
 	name, ok := card[0].(string)
 	if !ok {
-		return c, fmt.Errorf("invalid card definition")
+		return c, fmt.Errorf("invalid card name")
 	}
 
 	// set name
@@ -295,7 +295,7 @@ func parseSection(section List, markups []Markup, atoms []Atom, cards []Card) (S
 	// get section type
 	_typ, ok := toInt(section[0])
 	if !ok {
-		return s, fmt.Errorf("invalid section definition")
+		return s, fmt.Errorf("invalid section type")
 	}
 
 	// run validators based on type
@@ -309,7 +309,7 @@ func parseSection(section List, markups []Markup, atoms []Atom, cards []Card) (S
 	case CardSection:
 		return parseCardSection(section, cards)
 	default:
-		return s, fmt.Errorf("invalid section definition")
+		return s, fmt.Errorf("invalid section type")
 	}
 }
 
@@ -349,7 +349,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 		// coerce value
 		marker, ok := _marker.(List)
 		if !ok {
-			return s, fmt.Errorf("invalid markup section definition")
+			return s, fmt.Errorf("invalid markup section marker definition")
 		}
 
 		// validate marker
@@ -377,7 +377,7 @@ func parseImageSection(image List) (Section, error) {
 	// get source
 	source, ok := image[1].(string)
 	if !ok {
-		return s, fmt.Errorf("invalid image section definition")
+		return s, fmt.Errorf("invalid image section source")
 	}
 
 	// set source
@@ -506,7 +506,7 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	// get opened markups
 	openedMarkups, ok := marker[1].(List)
 	if !ok {
-		return m, 0, fmt.Errorf("invalid marker definition")
+		return m, 0, fmt.Errorf("invalid marker opened markups")
 	}
 
 	// validate opened markups
@@ -532,7 +532,7 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	// get closed markups
 	closedMarkups, ok := toInt(marker[2])
 	if !ok {
-		return m, 0, fmt.Errorf("invalid marker definition")
+		return m, 0, fmt.Errorf("invalid marker closed markup")
 	}
 
 	// decrement counter
