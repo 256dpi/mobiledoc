@@ -1,7 +1,5 @@
 package mobiledoc
 
-import "github.com/asaskevich/govalidator"
-
 // A is a short-hand for an array of interfaces.
 type A = []interface{}
 
@@ -11,7 +9,7 @@ type M = map[string]interface{}
 // DefaultMarkups defines the default expected markups with the tag as the key
 // and a map of attributes and validator functions.
 var DefaultMarkups = map[string]map[string]func(string) bool{
-	"a":      {"href": govalidator.IsURL},
+	"a":      {"href": func(string) bool { return true }},
 	"b":      nil,
 	"code":   nil,
 	"em":     nil,
@@ -36,6 +34,9 @@ var DefaultMarkupSections = []string{"aside", "blockquote", "h1", "h2", "h3", "h
 
 // DefaultListSections defines the default list sections.
 var DefaultListSections = []string{"ul", "ol"}
+
+// DefaultImageSection defines the default image section validator.
+var DefaultImageSection = func(string) bool { return true }
 
 // The available marker identifiers.
 const (

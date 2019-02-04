@@ -3,11 +3,7 @@ package mobiledoc
 import (
 	"errors"
 	"fmt"
-
-	"github.com/asaskevich/govalidator"
 )
-
-// TODO: Is the URL validation too strict?
 
 // TODO: Allow "target" attribute for URLs?
 
@@ -25,7 +21,7 @@ type Validator struct {
 	ListSections []string
 
 	// ImageSection defines whether the image section is allowed.
-	ImageSection bool
+	ImageSection func(string) bool
 
 	// Markups defines the expected markups with the name as key and a map of
 	// attributes and validations functions.
@@ -45,7 +41,7 @@ func NewValidator() *Validator {
 	return &Validator{
 		MarkupSections: DefaultMarkupSections,
 		ListSections:   DefaultListSections,
-		ImageSection:   true,
+		ImageSection:   DefaultImageSection,
 		Markups:        DefaultMarkups,
 		Atoms:          make(map[string]func(string, M) bool),
 		Cards:          make(map[string]func(M) bool),
@@ -397,7 +393,7 @@ func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) e
 // ValidateImageSection validates a single image section.
 func (v *Validator) ValidateImageSection(image A) error {
 	// check availability
-	if !v.ImageSection {
+	if v.ImageSection == nil {
 		return fmt.Errorf("invalid image section")
 	}
 
@@ -412,10 +408,8 @@ func (v *Validator) ValidateImageSection(image A) error {
 		return fmt.Errorf("invalid image section definition")
 	}
 
-	// TODO: Make Validator configurable.
-
 	// check src
-	if !govalidator.IsURL(src) {
+	if !v.ImageSection(src) {
 		return fmt.Errorf("invalid image section src")
 	}
 
