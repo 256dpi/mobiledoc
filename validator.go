@@ -5,19 +5,42 @@ import "fmt"
 // Version specifies the mobiledoc version.
 const Version = "0.3.1"
 
+// LinkValidator validates the href attribute.
+func LinkValidator(attributes Map) bool {
+	for key, value := range attributes {
+		switch key {
+		case "href":
+			// get href
+			_, ok := value.(string)
+			if !ok {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
+// NoAttributesValidator returns true if the provided attributes are empty.
+func NoAttributesValidator(attributes Map) bool {
+	return len(attributes) == 0
+}
+
 // DefaultMarkups defines the default expected markups with the tag as the key
 // and a map of attributes and validator functions.
 var DefaultMarkups = map[string]func(Map) bool{
-	"a":      func(Map) bool { return true },
-	"b":      nil,
-	"code":   nil,
-	"em":     nil,
-	"i":      nil,
-	"s":      nil,
-	"strong": nil,
-	"sub":    nil,
-	"sup":    nil,
-	"u":      nil,
+	"a":      LinkValidator,
+	"b":      NoAttributesValidator,
+	"code":   NoAttributesValidator,
+	"em":     NoAttributesValidator,
+	"i":      NoAttributesValidator,
+	"s":      NoAttributesValidator,
+	"strong": NoAttributesValidator,
+	"sub":    NoAttributesValidator,
+	"sup":    NoAttributesValidator,
+	"u":      NoAttributesValidator,
 }
 
 // DefaultMarkupSections defines the default markup sections.
@@ -27,7 +50,9 @@ var DefaultMarkupSections = []string{"aside", "blockquote", "h1", "h2", "h3", "h
 var DefaultListSections = []string{"ul", "ol"}
 
 // DefaultImageSection defines the default image section validator.
-var DefaultImageSection = func(string) bool { return true }
+var DefaultImageSection = func(source string) bool {
+	return len(source) > 0
+}
 
 // Validator validates a mobiledoc.
 type Validator struct {
