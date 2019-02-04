@@ -101,6 +101,7 @@ func TestValidateMarkups(t *testing.T) {
 	assert.NoError(t, v.ValidateMarkup(List{"a", List{"href", "http://example.com"}}))
 	assert.NoError(t, v.ValidateMarkup(List{"a", List{"href", "mailto:example@example.com"}}))
 
+	assert.Error(t, v.ValidateMarkup(List{1}))
 	assert.Error(t, v.ValidateMarkup(List{"foo"}))
 	assert.Error(t, v.ValidateMarkup(List{"a", List{"href"}}))
 	assert.Error(t, v.ValidateMarkup(List{"a", List{"foo", "bar"}}))
