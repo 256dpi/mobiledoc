@@ -77,3 +77,154 @@ func TestValidator(t *testing.T) {
 	assert.Equal(t, Map{"bar": 42}, atom1)
 	assert.Equal(t, Map{"foo": 42}, card1)
 }
+
+func TestValidatorInvalidVersion(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: "foo",
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidMarkup(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: Version,
+		Markups: []Markup{
+			{Tag: "x"},
+		},
+	})
+	assert.Error(t, err)
+
+	v.Markups["x"] = func(maps Map) bool {
+		return false
+	}
+
+	err = v.Validate(Document{
+		Version: Version,
+		Markups: []Markup{
+			{Tag: "x"},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidAtom(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: Version,
+		Atoms: []Atom{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+
+	v.Atoms["x"] = nil
+
+	err = v.Validate(Document{
+		Version: Version,
+		Atoms: []Atom{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+
+	v.Atoms["x"] = func(s string, i interface{}) bool {
+		return false
+	}
+
+	err = v.Validate(Document{
+		Version: Version,
+		Atoms: []Atom{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidCard(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: Version,
+		Cards: []Card{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+
+	v.Cards["x"] = nil
+
+	err = v.Validate(Document{
+		Version: Version,
+		Cards: []Card{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+
+	v.Cards["x"] = func(i interface{}) bool {
+		return false
+	}
+
+	err = v.Validate(Document{
+		Version: Version,
+		Cards: []Card{
+			{Name: "x"},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidMarkupSection(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: Version,
+		Sections: []Section{
+			{Type: MarkupSection, Tag: "x"},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidImageSection(t *testing.T) {
+	v := NewValidator()
+
+	v.ImageSection = nil
+
+	err := v.Validate(Document{
+		Version: Version,
+		Sections: []Section{
+			{Type: ImageSection},
+		},
+	})
+	assert.Error(t, err)
+
+	v.ImageSection = func(string) bool {
+		return false
+	}
+
+	err = v.Validate(Document{
+		Version: Version,
+		Sections: []Section{
+			{Type: ImageSection},
+		},
+	})
+	assert.Error(t, err)
+}
+
+func TestValidatorInvalidListSection(t *testing.T) {
+	v := NewValidator()
+
+	err := v.Validate(Document{
+		Version: Version,
+		Sections: []Section{
+			{Type: ListSection, Tag: "x"},
+		},
+	})
+	assert.Error(t, err)
+}
