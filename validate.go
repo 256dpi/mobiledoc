@@ -10,15 +10,49 @@ import (
 
 // TODO: Allow "target" attribute for URLs?
 
-// TODO: Use a validator type.
-
 // TODO: Add parser that transforms the mobiledoc in a usable in memory layout.
 
 // ErrInvalidMobileDoc is returned if the specified mobiledoc is invalid.
 var ErrInvalidMobileDoc = errors.New("invalid mobiledoc")
 
+// Validator validates a mobiledoc.
+type Validator struct {
+	// MarkupSections defines the expected markup sections.
+	MarkupSections []string
+
+	// ListSections defines the expected list sections.
+	ListSections []string
+
+	// ImageSection defines whether the image section is allowed.
+	ImageSection bool
+
+	// Markups defines the expected markups with the name as key and a map of
+	// attributes and validations functions.
+	Markups map[string]map[string]func(string) bool
+
+	// Atoms defines the expected atoms with the name as the key and a validator
+	// function.
+	Atoms map[string]func(string, M) bool
+
+	// Cards defines the expected cards with the name as the key and a validator
+	// function.
+	Cards map[string]func(M) bool
+}
+
+// NewValidator creates a validator that validates the mobiledoc standard.
+func NewValidator() *Validator {
+	return &Validator{
+		MarkupSections: DefaultMarkupSections,
+		ListSections:   DefaultListSections,
+		ImageSection:   true,
+		Markups:        DefaultMarkups,
+		Atoms:          make(map[string]func(string, M) bool),
+		Cards:          make(map[string]func(M) bool),
+	}
+}
+
 // Validate will walk the specified mobiledoc and check if it is valid.
-func Validate(doc M) error {
+func (v *Validator) Validate(doc M) error {
 	// check version
 	if version, ok := doc["version"]; !ok || version != "0.3.1" {
 		return ErrInvalidMobileDoc
@@ -47,7 +81,7 @@ func Validate(doc M) error {
 			}
 
 			// validate markup
-			err := ValidateMarkup(markup)
+			err := v.ValidateMarkup(markup)
 			if err != nil {
 				return err
 			}
@@ -77,7 +111,7 @@ func Validate(doc M) error {
 			}
 
 			// validate atom
-			err := ValidateAtom(atom)
+			err := v.ValidateAtom(atom)
 			if err != nil {
 				return err
 			}
@@ -107,7 +141,7 @@ func Validate(doc M) error {
 			}
 
 			// validate card
-			err := ValidateCard(card)
+			err := v.ValidateCard(card)
 			if err != nil {
 				return err
 			}
@@ -131,7 +165,7 @@ func Validate(doc M) error {
 			}
 
 			// validate section
-			err := ValidateSection(section, numMarkups, numAtoms, numCards)
+			err := v.ValidateSection(section, numMarkups, numAtoms, numCards)
 			if err != nil {
 				return err
 			}
@@ -142,7 +176,7 @@ func Validate(doc M) error {
 }
 
 // ValidateMarkup will validate a single markup.
-func ValidateMarkup(markup A) error {
+func (v *Validator) ValidateMarkup(markup A) error {
 	// validate length
 	if len(markup) == 0 || len(markup) > 2 {
 		return ErrInvalidMobileDoc
@@ -155,7 +189,7 @@ func ValidateMarkup(markup A) error {
 	}
 
 	// check tag existence
-	allowedAttributes, ok := Markups[tag]
+	allowedAttributes, ok := v.Markups[tag]
 	if !ok {
 		return ErrInvalidMobileDoc
 	}
@@ -201,7 +235,7 @@ func ValidateMarkup(markup A) error {
 }
 
 // ValidateAtom will validate a single atom.
-func ValidateAtom(atom A) error {
+func (v *Validator) ValidateAtom(atom A) error {
 	// validate length
 	if len(atom) == 0 || len(atom) > 3 {
 		return ErrInvalidMobileDoc
@@ -214,7 +248,7 @@ func ValidateAtom(atom A) error {
 	}
 
 	// check atom existence
-	validator, ok := Atoms[name]
+	validator, ok := v.Atoms[name]
 	if !ok {
 		return ErrInvalidMobileDoc
 	}
@@ -248,7 +282,7 @@ func ValidateAtom(atom A) error {
 }
 
 // ValidateCard will validate a single card.
-func ValidateCard(card A) error {
+func (v *Validator) ValidateCard(card A) error {
 	// validate length
 	if len(card) == 0 || len(card) > 2 {
 		return ErrInvalidMobileDoc
@@ -261,7 +295,7 @@ func ValidateCard(card A) error {
 	}
 
 	// check card existence
-	validator, ok := Cards[name]
+	validator, ok := v.Cards[name]
 	if !ok {
 		return ErrInvalidMobileDoc
 	}
@@ -285,26 +319,8 @@ func ValidateCard(card A) error {
 	return nil
 }
 
-/*
-[sectionTypeIdentifier, <type dependent>], ──── Card
-[1, "p", [
-      [textTypeIdentifier, openMarkupsIndexes, numberOfClosedMarkups, value],
-      [0, [], 0, "Example with no markup"],      ──── textTypeIdentifier for markup is always 0
-      [0, [0], 1, "Example wrapped in b tag (opened markup #0), 1 closed markup"],
-      [0, [1], 0, "Example opening i tag (opened markup with #1, 0 closed markups)"],
-      [0, [], 1, "Example closing i tag (no opened markups, 1 closed markup)"],
-      [0, [1, 0], 1, "Example opening i tag and b tag, closing b tag (opened markups #1 and #0, 1 closed markup [closes markup #0])"],
-      [0, [], 1, "Example closing i tag, (no opened markups, 1 closed markup [closes markup #1])"],
-    ]],
-    [1, "p", [
-      [textTypeIdentifier, openMarkupsIndexes, numberOfClosedMarkups, atomIndex],
-      [1, [], 0, 0],             ──── mention atom at index 0 (@bob), textTypeIdentifier for atom is always 1
-      [1, [0], 1, 1]             ──── mention atom at index 1 (@tom) wrapped in b tag (markup index 0)
-    ]]
-*/
-
 // ValidateSection will validate a single section.
-func ValidateSection(section A, numMarkups, numAtoms, numCards int) error {
+func (v *Validator) ValidateSection(section A, numMarkups, numAtoms, numCards int) error {
 	// validate length
 	if len(section) == 0 {
 		return ErrInvalidMobileDoc
@@ -319,20 +335,20 @@ func ValidateSection(section A, numMarkups, numAtoms, numCards int) error {
 	// run validators based on type
 	switch typ {
 	case MarkupSection:
-		return ValidateMarkupSection(section, numMarkups, numAtoms)
+		return v.ValidateMarkupSection(section, numMarkups, numAtoms)
 	case ImageSection:
-		return ValidateImageSection(section)
+		return v.ValidateImageSection(section)
 	case ListSection:
-		return ValidateListSection(section, numMarkups, numAtoms)
+		return v.ValidateListSection(section, numMarkups, numAtoms)
 	case CardSection:
-		return ValidateCardSection(section, numCards)
+		return v.ValidateCardSection(section, numCards)
 	default:
 		return ErrInvalidMobileDoc
 	}
 }
 
 // ValidateMarkupSection validates a single markup section.
-func ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
+func (v *Validator) ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
 	// validate length
 	if len(section) != 3 {
 		return ErrInvalidMobileDoc
@@ -345,7 +361,7 @@ func ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
 	}
 
 	// validate tag
-	if !contains(MarkupSections, tag) {
+	if !contains(v.MarkupSections, tag) {
 		return ErrInvalidMobileDoc
 	}
 
@@ -368,7 +384,7 @@ func ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
 
 		// validate marker
 		var err error
-		openMarkups, err = ValidateMarker(marker, numMarkups, numAtoms, openMarkups)
+		openMarkups, err = v.ValidateMarker(marker, numMarkups, numAtoms, openMarkups)
 		if err != nil {
 			return err
 		}
@@ -378,8 +394,11 @@ func ValidateMarkupSection(section A, numMarkups, numAtoms int) error {
 }
 
 // ValidateImageSection validates a single image section.
-func ValidateImageSection(image A) error {
-	// TODO: Allow disable.
+func (v *Validator) ValidateImageSection(image A) error {
+	// check availability
+	if !v.ImageSection {
+		return ErrInvalidMobileDoc
+	}
 
 	// validate length
 	if len(image) != 2 {
@@ -401,9 +420,7 @@ func ValidateImageSection(image A) error {
 }
 
 // ValidateListSection validates a single list section.
-func ValidateListSection(list A, numMarkups, numAtoms int) error {
-	// TODO: Allow disable.
-
+func (v *Validator) ValidateListSection(list A, numMarkups, numAtoms int) error {
 	// validate length
 	if len(list) != 3 {
 		return ErrInvalidMobileDoc
@@ -416,7 +433,7 @@ func ValidateListSection(list A, numMarkups, numAtoms int) error {
 	}
 
 	// validate tag
-	if !contains(ListSections, tag) {
+	if !contains(v.ListSections, tag) {
 		return ErrInvalidMobileDoc
 	}
 
@@ -447,7 +464,7 @@ func ValidateListSection(list A, numMarkups, numAtoms int) error {
 
 			// validate marker
 			var err error
-			openMarkups, err = ValidateMarker(marker, numMarkups, numAtoms, openMarkups)
+			openMarkups, err = v.ValidateMarker(marker, numMarkups, numAtoms, openMarkups)
 			if err != nil {
 				return err
 			}
@@ -458,7 +475,7 @@ func ValidateListSection(list A, numMarkups, numAtoms int) error {
 }
 
 // ValidateCardSection validates a single card section.
-func ValidateCardSection(card A, numCards int) error {
+func (v *Validator) ValidateCardSection(card A, numCards int) error {
 	// validate length
 	if len(card) != 2 {
 		return ErrInvalidMobileDoc
@@ -479,7 +496,7 @@ func ValidateCardSection(card A, numCards int) error {
 }
 
 // ValidateMarker validates a single marker.
-func ValidateMarker(marker A, numMarkups, numAtoms, openMarkups int) (int, error) {
+func (v *Validator) ValidateMarker(marker A, numMarkups, numAtoms, openMarkups int) (int, error) {
 	// validate length
 	if len(marker) != 4 {
 		return 0, ErrInvalidMobileDoc
