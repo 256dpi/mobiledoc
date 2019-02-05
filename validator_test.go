@@ -78,6 +78,10 @@ func TestValidator(t *testing.T) {
 	assert.Equal(t, Map{"foo": 42}, card1)
 }
 
+func TestNewEmptyValidator(t *testing.T) {
+	NewEmptyValidator()
+}
+
 func TestValidatorInvalidVersion(t *testing.T) {
 	v := NewDefaultValidator()
 
