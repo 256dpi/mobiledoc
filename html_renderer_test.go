@@ -55,19 +55,19 @@ func TestHTMLRenderer(t *testing.T) {
 	}
 
 	r := NewHTMLRenderer()
-	r.Atoms["atom1"] = func(w *bufio.Writer, text string, payload interface{}) error {
+	r.Atoms["atom1"] = func(w *bufio.Writer, text string, payload Map) error {
 		_, err := w.WriteString(fmt.Sprintf("<span class=\"atom1\">%s</span>", text))
 		return err
 	}
-	r.Atoms["atom2"] = func(w *bufio.Writer, text string, payload interface{}) error {
+	r.Atoms["atom2"] = func(w *bufio.Writer, text string, payload Map) error {
 		_, err := w.WriteString(fmt.Sprintf("<span class=\"atom2\">%s</span>", text))
 		return err
 	}
-	r.Cards["card1"] = func(w *bufio.Writer, payload interface{}) error {
+	r.Cards["card1"] = func(w *bufio.Writer, payload Map) error {
 		_, err := w.WriteString("<div>card1</div>")
 		return err
 	}
-	r.Cards["card2"] = func(w *bufio.Writer, payload interface{}) error {
+	r.Cards["card2"] = func(w *bufio.Writer, payload Map) error {
 		_, err := w.WriteString("<div>card2</div>")
 		return err
 	}

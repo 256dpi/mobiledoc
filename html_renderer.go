@@ -10,15 +10,15 @@ import (
 
 // HTMLRenderer implements a basic HTML renderer.
 type HTMLRenderer struct {
-	Atoms map[string]func(*bufio.Writer, string, interface{}) error
-	Cards map[string]func(*bufio.Writer, interface{}) error
+	Atoms map[string]func(*bufio.Writer, string, Map) error
+	Cards map[string]func(*bufio.Writer, Map) error
 }
 
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
 	return &HTMLRenderer{
-		Atoms: make(map[string]func(*bufio.Writer, string, interface{}) error),
-		Cards: make(map[string]func(*bufio.Writer, interface{}) error),
+		Atoms: make(map[string]func(*bufio.Writer, string, Map) error),
+		Cards: make(map[string]func(*bufio.Writer, Map) error),
 	}
 }
 
@@ -143,7 +143,7 @@ func (r *HTMLRenderer) renderCardSection(w *bufio.Writer, section Section) error
 	}
 
 	// call renderer
-	err := renderer(w, section.Card)
+	err := renderer(w, section.Card.Payload)
 	if err != nil {
 		return err
 	}
