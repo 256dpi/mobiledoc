@@ -54,21 +54,21 @@ func TestValidator(t *testing.T) {
 
 	v := NewDefaultValidator()
 
-	var atom1 interface{}
-	v.Atoms["atom1"] = func(_ string, payload interface{}) bool {
+	var atom1 Map
+	v.Atoms["atom1"] = func(_ string, payload Map) bool {
 		atom1 = payload
 		return true
 	}
-	v.Atoms["atom2"] = func(string, interface{}) bool {
+	v.Atoms["atom2"] = func(string, Map) bool {
 		return true
 	}
 
-	var card1 interface{}
-	v.Cards["card1"] = func(payload interface{}) bool {
+	var card1 Map
+	v.Cards["card1"] = func(payload Map) bool {
 		card1 = payload
 		return true
 	}
-	v.Cards["card2"] = func(payload interface{}) bool {
+	v.Cards["card2"] = func(payload Map) bool {
 		return true
 	}
 
@@ -132,7 +132,7 @@ func TestValidatorInvalidAtom(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	v.Atoms["x"] = func(s string, i interface{}) bool {
+	v.Atoms["x"] = func(string, Map) bool {
 		return false
 	}
 
@@ -166,7 +166,7 @@ func TestValidatorInvalidCard(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	v.Cards["x"] = func(i interface{}) bool {
+	v.Cards["x"] = func(Map) bool {
 		return false
 	}
 

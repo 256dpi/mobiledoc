@@ -62,11 +62,11 @@ type Validator struct {
 
 	// Atoms defines the allowed atoms with the name as the key and a validator
 	// function.
-	Atoms map[string]func(name string, payload interface{}) bool
+	Atoms map[string]func(name string, payload Map) bool
 
 	// Cards defines the allowed cards with the name as the key and a validator
 	// function.
-	Cards map[string]func(payload interface{}) bool
+	Cards map[string]func(payload Map) bool
 
 	// MarkupSections defines the allowed markup sections.
 	MarkupSections []string
@@ -83,8 +83,8 @@ type Validator struct {
 func NewEmptyValidator() *Validator {
 	return &Validator{
 		Markups:        make(map[string]func(Map) bool),
-		Atoms:          make(map[string]func(string, interface{}) bool),
-		Cards:          make(map[string]func(interface{}) bool),
+		Atoms:          make(map[string]func(string, Map) bool),
+		Cards:          make(map[string]func(Map) bool),
 		MarkupSections: nil,
 		ListSections:   nil,
 		ImageSection:   nil,
@@ -96,8 +96,8 @@ func NewEmptyValidator() *Validator {
 func NewDefaultValidator() *Validator {
 	return &Validator{
 		Markups:        DefaultMarkups,
-		Atoms:          make(map[string]func(string, interface{}) bool),
-		Cards:          make(map[string]func(interface{}) bool),
+		Atoms:          make(map[string]func(string, Map) bool),
+		Cards:          make(map[string]func(Map) bool),
 		MarkupSections: DefaultMarkupSections,
 		ListSections:   DefaultListSections,
 		ImageSection:   DefaultImageSection,

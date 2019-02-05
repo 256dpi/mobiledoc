@@ -321,6 +321,14 @@ func TestParseInvalidAtom(t *testing.T) {
 		},
 	})
 	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"atoms": List{
+			List{"atom", "foo", 1},
+		},
+	})
+	assert.Error(t, err)
 }
 
 func TestParseInvalidCard(t *testing.T) {
@@ -336,6 +344,14 @@ func TestParseInvalidCard(t *testing.T) {
 		"version": Version,
 		"cards": List{
 			List{1, 1},
+		},
+	})
+	assert.Error(t, err)
+
+	_, err = Parse(Map{
+		"version": Version,
+		"cards": List{
+			List{"foo", 1},
 		},
 	})
 	assert.Error(t, err)

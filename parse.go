@@ -47,13 +47,13 @@ type Markup struct {
 type Atom struct {
 	Name    string
 	Text    string
-	Payload interface{}
+	Payload Map
 }
 
 // Card is a single card.
 type Card struct {
 	Name    string
-	Payload interface{}
+	Payload Map
 }
 
 // Section is a single section.
@@ -279,8 +279,14 @@ func parseAtom(atom List) (Atom, error) {
 	// set text
 	a.Text = text
 
+	// get payload
+	payload, ok := atom[2].(Map)
+	if !ok {
+		return a, fmt.Errorf("invalid atom payload")
+	}
+
 	// set payload
-	a.Payload = atom[2]
+	a.Payload = payload
 
 	return a, nil
 }
@@ -303,8 +309,14 @@ func parseCard(card List) (Card, error) {
 	// set name
 	c.Name = name
 
+	// get payload
+	payload, ok := card[1].(Map)
+	if !ok {
+		return c, fmt.Errorf("invalid card payload")
+	}
+
 	// set payload
-	c.Payload = card[1]
+	c.Payload = payload
 
 	return c, nil
 }
