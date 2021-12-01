@@ -37,7 +37,7 @@ const sampleJSON = `{
 				[0,[0],1,"foo"]
 			],[
 				[0,[0],0,"foo"],
-				[0,[],1,"foo"]
+				[0,[],1,"<foo>"]
 			]
 		]],
 		[10,1]
@@ -83,7 +83,7 @@ func sampleMap() Map {
 				},
 				List{
 					List{TextMarker, List{0}, 0, "foo"},
-					List{TextMarker, List{}, 1, "foo"},
+					List{TextMarker, List{}, 1, "<foo>"},
 				},
 			}},
 			List{CardSection, 1},
@@ -131,7 +131,7 @@ func sampleDoc() Document {
 			},
 			{
 				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Text: "foo"},
-				{Type: TextMarker, ClosedMarkups: 1, Text: "foo"},
+				{Type: TextMarker, ClosedMarkups: 1, Text: "<foo>"},
 			},
 		}},
 		{Type: 10, Card: &doc.Cards[1]},
