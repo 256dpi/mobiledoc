@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHTMLRenderer(t *testing.T) {
@@ -14,7 +15,7 @@ func TestHTMLRenderer(t *testing.T) {
 		Markups: []Markup{
 			{Tag: "b"},
 			{Tag: "i"},
-			{Tag: "a", Attributes: Map{"href": "http://example.com"}},
+			{Tag: "a", Attributes: Map{"href": "https://example.com"}},
 		},
 		Atoms: []Atom{
 			{Name: "atom1", Text: "foo", Payload: Map{"bar": 42}},
@@ -40,7 +41,7 @@ func TestHTMLRenderer(t *testing.T) {
 			{Type: AtomMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Atom: &doc.Atoms[1]},
 			{Type: AtomMarker, ClosedMarkups: 1, Atom: &doc.Atoms[0]},
 		}},
-		{Type: ImageSection, Source: "http://example.com/foo.png"},
+		{Type: ImageSection, Source: "https://example.com/foo.png"},
 		{Type: ListSection, Tag: "ul", Items: [][]Marker{
 			{
 				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
@@ -72,7 +73,7 @@ func TestHTMLRenderer(t *testing.T) {
 		return err
 	}
 
-	out := `<div>card1</div><p>foo<b>foo</b><i>foofoo</i><i><a href="http://example.com">foo</a>foo</i></p><p><span class="atom1">foo</span><b><span class="atom2">foo</span><span class="atom1">foo</span></b></p><img src="http://example.com/foo.png"><ul><li>foo<b>foo</b></li><li><b>foo&lt;foo&gt;</b></li></ul><div>card2</div>`
+	out := `<div>card1</div><p>foo<b>foo</b><i>foofoo</i><i><a href="https://example.com">foo</a>foo</i></p><p><span class="atom1">foo</span><b><span class="atom2">foo</span><span class="atom1">foo</span></b></p><img src="https://example.com/foo.png"><ul><li>foo<b>foo</b></li><li><b>foo&lt;foo&gt;</b></li></ul><div>card2</div>`
 
 	buf := &bytes.Buffer{}
 	err := r.Render(buf, doc)

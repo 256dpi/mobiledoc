@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateJSON(t *testing.T) {
+func TestParseJSON(t *testing.T) {
 	var in Map
 	err := json.Unmarshal([]byte(`{
 		"version":"0.3.1",
 		"markups":[
 			["b"],
 			["i"],
-			["a",["href","http://example.com"]]
+			["a",["href","https://example.com"]]
 		],
 		"atoms":[
 			["atom1","foo",{"bar":42}],
@@ -39,7 +39,7 @@ func TestValidateJSON(t *testing.T) {
 				[1,[0],0,1],
 				[1,[],1,0]
 			]],
-			[2,"http://example.com/foo.png"],
+			[2,"https://example.com/foo.png"],
 			[3,"ul",[
 				[
 					[0,[],0,"foo"],
@@ -59,7 +59,7 @@ func TestValidateJSON(t *testing.T) {
 		Markups: []Markup{
 			{Tag: "b"},
 			{Tag: "i"},
-			{Tag: "a", Attributes: Map{"href": "http://example.com"}},
+			{Tag: "a", Attributes: Map{"href": "https://example.com"}},
 		},
 		Atoms: []Atom{
 			{Name: "atom1", Text: "foo", Payload: Map{"bar": float64(42)}},
@@ -85,7 +85,7 @@ func TestValidateJSON(t *testing.T) {
 			{Type: AtomMarker, OpenMarkups: []*Markup{&out.Markups[0]}, Atom: &out.Atoms[1]},
 			{Type: AtomMarker, ClosedMarkups: 1, Atom: &out.Atoms[0]},
 		}},
-		{Type: ImageSection, Source: "http://example.com/foo.png"},
+		{Type: ImageSection, Source: "https://example.com/foo.png"},
 		{Type: ListSection, Tag: "ul", Items: [][]Marker{
 			{
 				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
@@ -104,13 +104,13 @@ func TestValidateJSON(t *testing.T) {
 	assert.Equal(t, out, doc)
 }
 
-func TestParse(t *testing.T) {
+func TestParseMap(t *testing.T) {
 	in := Map{
 		"version": Version,
 		"markups": List{
 			List{"b"},
 			List{"i"},
-			List{"a", List{"href", "http://example.com"}},
+			List{"a", List{"href", "https://example.com"}},
 		},
 		"atoms": List{
 			List{"atom1", "foo", Map{"bar": 42}},
@@ -135,7 +135,7 @@ func TestParse(t *testing.T) {
 				List{AtomMarker, List{0}, 0, 1},
 				List{AtomMarker, List{}, 1, 0},
 			}},
-			List{ImageSection, "http://example.com/foo.png"},
+			List{ImageSection, "https://example.com/foo.png"},
 			List{ListSection, "ul", List{
 				List{
 					List{TextMarker, List{}, 0, "foo"},
@@ -155,7 +155,7 @@ func TestParse(t *testing.T) {
 		Markups: []Markup{
 			{Tag: "b"},
 			{Tag: "i"},
-			{Tag: "a", Attributes: Map{"href": "http://example.com"}},
+			{Tag: "a", Attributes: Map{"href": "https://example.com"}},
 		},
 		Atoms: []Atom{
 			{Name: "atom1", Text: "foo", Payload: Map{"bar": 42}},
@@ -181,7 +181,7 @@ func TestParse(t *testing.T) {
 			{Type: AtomMarker, OpenMarkups: []*Markup{&out.Markups[0]}, Atom: &out.Atoms[1]},
 			{Type: AtomMarker, ClosedMarkups: 1, Atom: &out.Atoms[0]},
 		}},
-		{Type: ImageSection, Source: "http://example.com/foo.png"},
+		{Type: ImageSection, Source: "https://example.com/foo.png"},
 		{Type: ListSection, Tag: "ul", Items: [][]Marker{
 			{
 				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
@@ -621,5 +621,4 @@ func TestParseInvalidMarker(t *testing.T) {
 		},
 	})
 	assert.Error(t, err)
-
 }

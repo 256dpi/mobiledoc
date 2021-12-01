@@ -12,7 +12,7 @@ func TestValidator(t *testing.T) {
 		Markups: []Markup{
 			{Tag: "b"},
 			{Tag: "i"},
-			{Tag: "a", Attributes: Map{"href": "http://example.com"}},
+			{Tag: "a", Attributes: Map{"href": "https://example.com"}},
 		},
 		Atoms: []Atom{
 			{Name: "atom1", Text: "foo", Payload: Map{"bar": 42}},
@@ -38,7 +38,7 @@ func TestValidator(t *testing.T) {
 			{Type: AtomMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Atom: &doc.Atoms[1]},
 			{Type: AtomMarker, ClosedMarkups: 1, Atom: &doc.Atoms[0]},
 		}},
-		{Type: ImageSection, Source: "http://example.com/foo.png"},
+		{Type: ImageSection, Source: "https://example.com/foo.png"},
 		{Type: ListSection, Tag: "ul", Items: [][]Marker{
 			{
 				{Type: TextMarker, ClosedMarkups: 0, Text: "foo"},
