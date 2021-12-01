@@ -13,32 +13,27 @@ func contains(list []string, str string) bool {
 
 func toInt(v interface{}) (int, bool) {
 	// check int
-	i, ok := v.(int)
-	if ok {
+	if i, ok := v.(int); ok {
 		return i, true
 	}
 
 	// check int64 (bson)
-	ii, ok := v.(int64)
-	if ok {
-		return int(ii), true
+	if i, ok := v.(int64); ok {
+		return int(i), true
 	}
 
 	// check float64 (json)
-	f, ok := v.(float64)
-	if ok {
+	if f, ok := v.(float64); ok {
 		return int(f), true
 	}
 
 	// check MarkerType (tests)
-	mt, ok := v.(MarkerType)
-	if ok {
+	if mt, ok := v.(MarkerType); ok {
 		return int(mt), true
 	}
 
 	// check SectionType (tests)
-	st, ok := v.(SectionType)
-	if ok {
+	if st, ok := v.(SectionType); ok {
 		return int(st), true
 	}
 
