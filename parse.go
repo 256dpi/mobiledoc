@@ -2,7 +2,7 @@ package mobiledoc
 
 import "fmt"
 
-// Parse will parse the specified raw mobiledoc.
+// Parse will parse the specified raw structure into a document.
 func Parse(doc Map) (Document, error) {
 	// prepare document
 	d := Document{}

@@ -13,7 +13,7 @@ const sampleJSON = `{
 	],
 	"cards":[
 		["card1",{"foo":42}],
-		["card2",{"foo":42}]
+		["card2",{"foo":24}]
 	],
 	"sections":[
 		[10,0],
@@ -58,7 +58,7 @@ func sampleMap() Map {
 		},
 		"cards": List{
 			List{"card1", Map{"foo": 42.0}},
-			List{"card2", Map{"foo": 42.0}},
+			List{"card2", Map{"foo": 24.0}},
 		},
 		"sections": List{
 			List{CardSection, 0},
@@ -105,7 +105,7 @@ func sampleDoc() Document {
 		},
 		Cards: []Card{
 			{Name: "card1", Payload: Map{"foo": float64(42)}},
-			{Name: "card2", Payload: Map{"foo": float64(42)}},
+			{Name: "card2", Payload: Map{"foo": float64(24)}},
 		},
 	}
 	doc.Sections = []Section{
