@@ -24,6 +24,9 @@ func Parse(doc Map) (Document, error) {
 			return d, fmt.Errorf("invalid markups definition")
 		}
 
+		// allocate markups
+		d.Markups = make([]Markup, 0, len(markups))
+
 		// parse markups
 		for _, item := range markups {
 			// coerce item
@@ -50,6 +53,9 @@ func Parse(doc Map) (Document, error) {
 		if !ok {
 			return d, fmt.Errorf("invalid atoms definition")
 		}
+
+		// allocate atoms
+		d.Atoms = make([]Atom, 0, len(atoms))
 
 		// parse atoms
 		for _, item := range atoms {
@@ -78,6 +84,9 @@ func Parse(doc Map) (Document, error) {
 			return d, fmt.Errorf("invalid cards definition")
 		}
 
+		// allocate cards
+		d.Cards = make([]Card, 0, len(cards))
+
 		// parse cards
 		for _, item := range cards {
 			// coerce item
@@ -104,6 +113,9 @@ func Parse(doc Map) (Document, error) {
 		if !ok {
 			return d, fmt.Errorf("invalid sections definition")
 		}
+
+		// allocate sections
+		d.Sections = make([]Section, 0, len(sections))
 
 		// parse sections
 		for _, item := range sections {
@@ -309,6 +321,9 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	var err error
 	var m Marker
 
+	// allocate markers
+	s.Markers = make([]Marker, 0, len(items))
+
 	// validate markers
 	for _, item := range items {
 		// coerce item
@@ -375,6 +390,9 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 		return s, fmt.Errorf("invalid list section items")
 	}
 
+	// allocate items
+	s.Items = make([][]Marker, 0, len(items))
+
 	// validate items
 	for _, _item := range items {
 		// coerce value
@@ -386,14 +404,14 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 		// prepare open markup counter
 		openMarkups := 0
 
-		// prepare list
-		var list []Marker
-
 		// prepare vars
 		var err error
 		var m Marker
 
-		// validate markers
+		// allocate markers
+		list := make([]Marker, 0, len(item))
+
+		// parse markers
 		for _, _marker := range item {
 			// coerce value
 			marker, ok := _marker.(List)
@@ -472,6 +490,11 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	openedMarkups, ok := marker[1].(List)
 	if !ok {
 		return m, 0, fmt.Errorf("invalid marker opened markups")
+	}
+
+	// allocate open markups
+	if len(openedMarkups) > 0 {
+		m.OpenMarkups = make([]*Markup, 0, len(openedMarkups))
 	}
 
 	// validate opened markups

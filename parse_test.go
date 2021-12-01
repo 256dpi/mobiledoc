@@ -445,3 +445,16 @@ func TestParseInvalidMarker(t *testing.T) {
 	})
 	assert.Error(t, err)
 }
+
+func BenchmarkParse(b *testing.B) {
+	in := sampleMap()
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := Parse(in)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
