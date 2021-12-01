@@ -17,17 +17,17 @@ func Parse(doc Map) (Document, error) {
 	d.Version = version
 
 	// check markups
-	if _markups, ok := doc["markups"]; ok {
+	if value, ok := doc["markups"]; ok {
 		// coerce value
-		markups, ok := _markups.(List)
+		markups, ok := value.(List)
 		if !ok {
 			return d, fmt.Errorf("invalid markups definition")
 		}
 
 		// parse markups
-		for _, _markup := range markups {
-			// coerce value
-			markup, ok := _markup.(List)
+		for _, item := range markups {
+			// coerce item
+			markup, ok := item.(List)
 			if !ok {
 				return d, fmt.Errorf("invalid markups definition")
 			}
@@ -52,9 +52,9 @@ func Parse(doc Map) (Document, error) {
 		}
 
 		// parse atoms
-		for _, _atom := range atoms {
-			// coerce value
-			atom, ok := _atom.(List)
+		for _, item := range atoms {
+			// coerce item
+			atom, ok := item.(List)
 			if !ok {
 				return d, fmt.Errorf("invalid atoms definition")
 			}
@@ -79,9 +79,9 @@ func Parse(doc Map) (Document, error) {
 		}
 
 		// parse cards
-		for _, _card := range cards {
-			// coerce value
-			card, ok := _card.(List)
+		for _, item := range cards {
+			// coerce item
+			card, ok := item.(List)
 			if !ok {
 				return d, fmt.Errorf("invalid cards definition")
 			}
@@ -106,9 +106,9 @@ func Parse(doc Map) (Document, error) {
 		}
 
 		// parse sections
-		for _, _section := range sections {
-			// coerce value
-			section, ok := _section.(List)
+		for _, item := range sections {
+			// coerce item
+			section, ok := item.(List)
 			if !ok {
 				return d, fmt.Errorf("invalid sections definition")
 			}
@@ -310,9 +310,9 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	var m Marker
 
 	// validate markers
-	for _, _marker := range items {
-		// coerce value
-		marker, ok := _marker.(List)
+	for _, item := range items {
+		// coerce item
+		marker, ok := item.(List)
 		if !ok {
 			return s, fmt.Errorf("invalid markup section marker definition")
 		}
