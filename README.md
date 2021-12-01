@@ -1,5 +1,9 @@
 # mobiledoc
 
+[![Test](https://github.com/256dpi/mobiledoc/actions/workflows/test.yml/badge.svg)](https://github.com/256dpi/mobiledoc/actions/workflows/test.yml)
+[![GoDoc](https://godoc.org/github.com/256dpi/mobiledoc?status.svg)](http://godoc.org/github.com/256dpi/mobiledoc)
+[![Release](https://img.shields.io/github/release/256dpi/mobiledoc.svg)](https://github.com/256dpi/mobiledoc/releases)
+
 **Go package for handling the mobiledoc format.**
 
 ## Installation
