@@ -6,31 +6,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidator(t *testing.T) {
+func TestFormatValidator(t *testing.T) {
+	v := NewFormatValidator()
+	err := v.Validate(sampleDoc())
+	assert.NoError(t, err)
+}
+
+func TestDefaultValidator(t *testing.T) {
 	v := NewDefaultValidator()
+	v.UnknownCards = true
 
-	var atom1 Map
-	v.Atoms["atom1"] = func(_ string, payload Map) bool {
-		atom1 = payload
+	i := 0
+	v.Atoms["atom1"] = func(name string, payload Map) bool {
+		assert.Equal(t, "foo", name)
+		assert.Equal(t, Map{"bar": 42.0}, payload)
+		i++
 		return true
 	}
-	v.Atoms["atom2"] = func(string, Map) bool {
+	v.Atoms["atom2"] = func(name string, payload Map) bool {
+		assert.Equal(t, "foo", name)
+		assert.Equal(t, Map{"bar": 24.0}, payload)
+		i++
 		return true
 	}
-
-	var card1 Map
 	v.Cards["card1"] = func(payload Map) bool {
-		card1 = payload
+		assert.Equal(t, Map{"foo": 42.0}, payload)
+		i++
 		return true
 	}
 	v.Cards["card2"] = func(payload Map) bool {
+		assert.Equal(t, Map{"foo": 24.0}, payload)
+		i++
 		return true
 	}
 
 	err := v.Validate(sampleDoc())
 	assert.NoError(t, err)
-	assert.Equal(t, Map{"bar": 42.0}, atom1)
-	assert.Equal(t, Map{"foo": 42.0}, card1)
+	assert.Equal(t, 4, i)
 }
 
 func TestNewEmptyValidator(t *testing.T) {

@@ -60,6 +60,10 @@ type Validator struct {
 	// attributes validator function.
 	Markups map[string]func(attributes Map) bool
 
+	// Whether to allow unknown atoms and cards.
+	UnknownAtoms bool
+	UnknownCards bool
+
 	// Atoms defines the allowed atoms with the name as the key and a validator
 	// function.
 	Atoms map[string]func(name string, payload Map) bool
@@ -82,22 +86,32 @@ type Validator struct {
 // NewEmptyValidator creates an empty validator.
 func NewEmptyValidator() *Validator {
 	return &Validator{
-		Markups:        make(map[string]func(Map) bool),
-		Atoms:          make(map[string]func(string, Map) bool),
-		Cards:          make(map[string]func(Map) bool),
-		MarkupSections: nil,
-		ListSections:   nil,
-		ImageSection:   nil,
+		Markups: make(map[string]func(Map) bool),
+		Atoms:   make(map[string]func(string, Map) bool),
+		Cards:   make(map[string]func(Map) bool),
 	}
 }
 
 // NewDefaultValidator creates a validator that validates the default mobiledoc
-// standard.
+// standard excluding atoms and cards.
 func NewDefaultValidator() *Validator {
 	return &Validator{
 		Markups:        DefaultMarkups,
 		Atoms:          make(map[string]func(string, Map) bool),
 		Cards:          make(map[string]func(Map) bool),
+		MarkupSections: DefaultMarkupSections,
+		ListSections:   DefaultListSections,
+		ImageSection:   DefaultImageSection,
+	}
+}
+
+// NewFormatValidator creates a validator that validates the default mobiledoc
+// standard including atoms and cards.
+func NewFormatValidator() *Validator {
+	return &Validator{
+		Markups:        DefaultMarkups,
+		UnknownAtoms:   true,
+		UnknownCards:   true,
 		MarkupSections: DefaultMarkupSections,
 		ListSections:   DefaultListSections,
 		ImageSection:   DefaultImageSection,
@@ -169,7 +183,7 @@ func (v *Validator) validateMarkup(markup Markup) error {
 func (v *Validator) validateAtom(atom Atom) error {
 	// check atom existence
 	validator, ok := v.Atoms[atom.Name]
-	if !ok {
+	if !ok && !v.UnknownAtoms {
 		return fmt.Errorf("invalid atom name")
 	}
 
@@ -189,7 +203,7 @@ func (v *Validator) validateAtom(atom Atom) error {
 func (v *Validator) validateCard(card Card) error {
 	// check card existence
 	validator, ok := v.Cards[card.Name]
-	if !ok {
+	if !ok && !v.UnknownCards {
 		return fmt.Errorf("invalid card name")
 	}
 
