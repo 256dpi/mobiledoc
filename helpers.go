@@ -1,5 +1,7 @@
 package mobiledoc
 
+import "reflect"
+
 func contains(list []string, str string) bool {
 	// check existence
 	for _, item := range list {
@@ -12,30 +14,31 @@ func contains(list []string, str string) bool {
 }
 
 func toInt(v interface{}) (int, bool) {
-	// check int
-	if i, ok := v.(int); ok {
+	// convert numbers
+	switch i := v.(type) {
+	case int:
 		return i, true
-	}
-
-	// check int64 (bson)
-	if i, ok := v.(int64); ok {
+	case int32: // bson
 		return int(i), true
+	case int64: // bson
+		return int(i), true
+	case float64: // json
+		return int(i), true
+	case MarkerType:
+		return int(i), true
+	case SectionType:
+		return int(i), true
+	default:
+		r := reflect.ValueOf(v)
+		switch r.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return int(r.Int()), true
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			return int(r.Uint()), true
+		case reflect.Float32, reflect.Float64:
+			return int(r.Float()), true
+		default:
+			return 0, false
+		}
 	}
-
-	// check float64 (json)
-	if f, ok := v.(float64); ok {
-		return int(f), true
-	}
-
-	// check MarkerType (tests)
-	if mt, ok := v.(MarkerType); ok {
-		return int(mt), true
-	}
-
-	// check SectionType (tests)
-	if st, ok := v.(SectionType); ok {
-		return int(st), true
-	}
-
-	return 0, false
 }
