@@ -19,7 +19,7 @@ func Parse(doc Map) (Document, error) {
 	// check markups
 	if value, ok := doc["markups"]; ok && value != nil {
 		// coerce value
-		markups, ok := value.(List)
+		markups, ok := toList(value)
 		if !ok {
 			return d, fmt.Errorf("invalid markups definition")
 		}
@@ -30,7 +30,7 @@ func Parse(doc Map) (Document, error) {
 		// parse markups
 		for _, item := range markups {
 			// coerce item
-			markup, ok := item.(List)
+			markup, ok := toList(item)
 			if !ok {
 				return d, fmt.Errorf("invalid markups definition")
 			}
@@ -49,7 +49,7 @@ func Parse(doc Map) (Document, error) {
 	// check atoms
 	if value, ok := doc["atoms"]; ok && value != nil {
 		// coerce value
-		atoms, ok := value.(List)
+		atoms, ok := toList(value)
 		if !ok {
 			return d, fmt.Errorf("invalid atoms definition")
 		}
@@ -60,7 +60,7 @@ func Parse(doc Map) (Document, error) {
 		// parse atoms
 		for _, item := range atoms {
 			// coerce item
-			atom, ok := item.(List)
+			atom, ok := toList(item)
 			if !ok {
 				return d, fmt.Errorf("invalid atoms definition")
 			}
@@ -79,7 +79,7 @@ func Parse(doc Map) (Document, error) {
 	// check cards
 	if value, ok := doc["cards"]; ok && value != nil {
 		// coerce value
-		cards, ok := value.(List)
+		cards, ok := toList(value)
 		if !ok {
 			return d, fmt.Errorf("invalid cards definition")
 		}
@@ -90,7 +90,7 @@ func Parse(doc Map) (Document, error) {
 		// parse cards
 		for _, item := range cards {
 			// coerce item
-			card, ok := item.(List)
+			card, ok := toList(item)
 			if !ok {
 				return d, fmt.Errorf("invalid cards definition")
 			}
@@ -109,7 +109,7 @@ func Parse(doc Map) (Document, error) {
 	// check sections
 	if value, ok := doc["sections"]; ok && value != nil {
 		// coerce value
-		sections, ok := value.(List)
+		sections, ok := toList(value)
 		if !ok {
 			return d, fmt.Errorf("invalid sections definition")
 		}
@@ -120,7 +120,7 @@ func Parse(doc Map) (Document, error) {
 		// parse sections
 		for _, item := range sections {
 			// coerce item
-			section, ok := item.(List)
+			section, ok := toList(item)
 			if !ok {
 				return d, fmt.Errorf("invalid sections definition")
 			}
@@ -163,7 +163,7 @@ func parseMarkup(markup List) (Markup, error) {
 	}
 
 	// get attributes
-	attributes, ok := markup[1].(List)
+	attributes, ok := toList(markup[1])
 	if !ok {
 		return m, fmt.Errorf("invalid markup attributes")
 	}
@@ -219,7 +219,7 @@ func parseAtom(atom List) (Atom, error) {
 	a.Text = text
 
 	// get payload
-	payload, ok := atom[2].(Map)
+	payload, ok := toMap(atom[2])
 	if !ok {
 		return a, fmt.Errorf("invalid atom payload")
 	}
@@ -249,7 +249,7 @@ func parseCard(card List) (Card, error) {
 	c.Name = name
 
 	// get payload
-	payload, ok := card[1].(Map)
+	payload, ok := toMap(card[1])
 	if !ok {
 		return c, fmt.Errorf("invalid card payload")
 	}
@@ -309,7 +309,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	s.Tag = tag
 
 	// get items
-	items, ok := section[2].(List)
+	items, ok := toList(section[2])
 	if !ok {
 		return s, fmt.Errorf("invalid markup section items")
 	}
@@ -327,7 +327,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	// validate markers
 	for _, item := range items {
 		// coerce item
-		marker, ok := item.(List)
+		marker, ok := toList(item)
 		if !ok {
 			return s, fmt.Errorf("invalid markup section marker definition")
 		}
@@ -385,7 +385,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	s.Tag = tag
 
 	// get items
-	items, ok := list[2].(List)
+	items, ok := toList(list[2])
 	if !ok {
 		return s, fmt.Errorf("invalid list section items")
 	}
@@ -396,7 +396,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	// validate items
 	for _, _item := range items {
 		// coerce value
-		item, ok := _item.(List)
+		item, ok := toList(_item)
 		if !ok {
 			return s, fmt.Errorf("invalid list section item")
 		}
@@ -414,7 +414,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 		// parse markers
 		for _, _marker := range item {
 			// coerce value
-			marker, ok := _marker.(List)
+			marker, ok := toList(_marker)
 			if !ok {
 				return s, fmt.Errorf("invalid list section item marker")
 			}
@@ -487,7 +487,7 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	m.Type = typ
 
 	// get opened markups
-	openedMarkups, ok := marker[1].(List)
+	openedMarkups, ok := toList(marker[1])
 	if !ok {
 		return m, 0, fmt.Errorf("invalid marker opened markups")
 	}

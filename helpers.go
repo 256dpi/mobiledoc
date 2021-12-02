@@ -1,6 +1,10 @@
 package mobiledoc
 
-import "reflect"
+import (
+	"reflect"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 func contains(list []string, str string) bool {
 	// check existence
@@ -40,5 +44,29 @@ func toInt(v interface{}) (int, bool) {
 		default:
 			return 0, false
 		}
+	}
+}
+
+func toMap(v interface{}) (Map, bool) {
+	// convert map
+	switch m := v.(type) {
+	case Map:
+		return m, true
+	case bson.M:
+		return m, true
+	default:
+		return nil, false
+	}
+}
+
+func toList(v interface{}) (List, bool) {
+	// convert list
+	switch l := v.(type) {
+	case List:
+		return l, true
+	case bson.A:
+		return l, true
+	default:
+		return nil, false
 	}
 }
