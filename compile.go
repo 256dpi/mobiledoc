@@ -4,8 +4,6 @@ import "fmt"
 
 const scratchSize = 128
 
-var formatValidator = NewFormatValidator()
-
 // Compile will compile provided document into its raw structure.
 func Compile(doc Document) (Map, error) {
 	// validate document

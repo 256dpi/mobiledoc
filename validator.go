@@ -2,6 +2,8 @@ package mobiledoc
 
 import "fmt"
 
+var formatValidator = NewFormatValidator()
+
 // Version specifies the mobiledoc version.
 const Version = "0.3.1"
 

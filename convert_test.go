@@ -6,11 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var defaultValidator = NewDefaultValidator()
-
 func TestConvertText(t *testing.T) {
 	doc := ConvertText("")
-	assert.NoError(t, defaultValidator.Validate(doc))
+	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
 		Sections: []Section{
@@ -28,7 +26,7 @@ func TestConvertText(t *testing.T) {
 	}, doc)
 
 	doc = ConvertText("Hello")
-	assert.NoError(t, defaultValidator.Validate(doc))
+	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
 		Sections: []Section{
@@ -46,7 +44,7 @@ func TestConvertText(t *testing.T) {
 	}, doc)
 
 	doc = ConvertText("Hello\nWorld!\n\nAwesome!\n")
-	assert.NoError(t, defaultValidator.Validate(doc))
+	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
 		Sections: []Section{
