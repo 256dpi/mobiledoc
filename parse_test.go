@@ -23,6 +23,18 @@ func TestParseMap(t *testing.T) {
 	assert.Equal(t, sampleDoc(), doc)
 }
 
+func TestParseNil(t *testing.T) {
+	doc, err := Parse(Map{
+		"version":  Version,
+		"markups":  nil,
+		"atoms":    nil,
+		"cards":    nil,
+		"sections": nil,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, Document{Version: Version}, doc)
+}
+
 func TestParseInvalidDocument(t *testing.T) {
 	_, err := Parse(Map{
 		"version": 1,

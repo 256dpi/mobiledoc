@@ -17,7 +17,7 @@ func Parse(doc Map) (Document, error) {
 	d.Version = version
 
 	// check markups
-	if value, ok := doc["markups"]; ok {
+	if value, ok := doc["markups"]; ok && value != nil {
 		// coerce value
 		markups, ok := value.(List)
 		if !ok {
@@ -47,7 +47,7 @@ func Parse(doc Map) (Document, error) {
 	}
 
 	// check atoms
-	if value, ok := doc["atoms"]; ok {
+	if value, ok := doc["atoms"]; ok && value != nil {
 		// coerce value
 		atoms, ok := value.(List)
 		if !ok {
@@ -77,7 +77,7 @@ func Parse(doc Map) (Document, error) {
 	}
 
 	// check cards
-	if value, ok := doc["cards"]; ok {
+	if value, ok := doc["cards"]; ok && value != nil {
 		// coerce value
 		cards, ok := value.(List)
 		if !ok {
@@ -107,7 +107,7 @@ func Parse(doc Map) (Document, error) {
 	}
 
 	// check sections
-	if value, ok := doc["sections"]; ok {
+	if value, ok := doc["sections"]; ok && value != nil {
 		// coerce value
 		sections, ok := value.(List)
 		if !ok {
