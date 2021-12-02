@@ -28,9 +28,9 @@ func Parse(doc Map) (Document, error) {
 		d.Markups = make([]Markup, 0, len(markups))
 
 		// parse markups
-		for _, item := range markups {
-			// coerce item
-			markup, ok := toList(item)
+		for _, value := range markups {
+			// coerce value
+			markup, ok := toList(value)
 			if !ok {
 				return d, fmt.Errorf("invalid markups definition")
 			}
@@ -58,9 +58,9 @@ func Parse(doc Map) (Document, error) {
 		d.Atoms = make([]Atom, 0, len(atoms))
 
 		// parse atoms
-		for _, item := range atoms {
-			// coerce item
-			atom, ok := toList(item)
+		for _, value := range atoms {
+			// coerce value
+			atom, ok := toList(value)
 			if !ok {
 				return d, fmt.Errorf("invalid atoms definition")
 			}
@@ -88,9 +88,9 @@ func Parse(doc Map) (Document, error) {
 		d.Cards = make([]Card, 0, len(cards))
 
 		// parse cards
-		for _, item := range cards {
-			// coerce item
-			card, ok := toList(item)
+		for _, value := range cards {
+			// coerce value
+			card, ok := toList(value)
 			if !ok {
 				return d, fmt.Errorf("invalid cards definition")
 			}
@@ -118,9 +118,9 @@ func Parse(doc Map) (Document, error) {
 		d.Sections = make([]Section, 0, len(sections))
 
 		// parse sections
-		for _, item := range sections {
-			// coerce item
-			section, ok := toList(item)
+		for _, value := range sections {
+			// coerce value
+			section, ok := toList(value)
 			if !ok {
 				return d, fmt.Errorf("invalid sections definition")
 			}
@@ -143,12 +143,12 @@ func parseMarkup(markup List) (Markup, error) {
 	// prepare markup
 	m := Markup{}
 
-	// validate length
+	// check length
 	if len(markup) == 0 || len(markup) > 2 {
 		return m, fmt.Errorf("invalid markup definition")
 	}
 
-	// check tag
+	// get tag
 	tag, ok := markup[0].(string)
 	if !ok || len(tag) == 0 {
 		return m, fmt.Errorf("invalid markup tag")
@@ -166,17 +166,14 @@ func parseMarkup(markup List) (Markup, error) {
 	attributes, ok := toList(markup[1])
 	if !ok {
 		return m, fmt.Errorf("invalid markup attributes")
-	}
-
-	// check if attributes are even
-	if len(attributes)%2 != 0 {
+	} else if len(attributes)%2 != 0 {
 		return m, fmt.Errorf("invalid markup attributes")
 	}
 
-	// initialize attributes
-	m.Attributes = Map{}
+	// allocate attributes
+	m.Attributes = make(Map, len(attributes)/2)
 
-	// check attributes
+	// parse attributes
 	for i := 0; i < len(attributes); i += 2 {
 		// get name
 		name, ok := attributes[i].(string)
@@ -195,12 +192,12 @@ func parseAtom(atom List) (Atom, error) {
 	// prepare atom
 	a := Atom{}
 
-	// validate length
+	// check length
 	if len(atom) != 3 {
 		return a, fmt.Errorf("invalid atom definition")
 	}
 
-	// check name
+	// get name
 	name, ok := atom[0].(string)
 	if !ok {
 		return a, fmt.Errorf("invalid atom name")
@@ -234,12 +231,12 @@ func parseCard(card List) (Card, error) {
 	// prepare card
 	c := Card{}
 
-	// validate length
+	// check length
 	if len(card) != 2 {
 		return c, fmt.Errorf("invalid card definition")
 	}
 
-	// check name
+	// get name
 	name, ok := card[0].(string)
 	if !ok {
 		return c, fmt.Errorf("invalid card name")
@@ -264,19 +261,19 @@ func parseSection(section List, markups []Markup, atoms []Atom, cards []Card) (S
 	// prepare section
 	s := Section{}
 
-	// validate length
+	// check length
 	if len(section) == 0 {
 		return s, fmt.Errorf("invalid section definition")
 	}
 
 	// get section type
-	_typ, ok := toInt(section[0])
+	typ, ok := toInt(section[0])
 	if !ok {
 		return s, fmt.Errorf("invalid section type")
 	}
 
-	// run validators based on type
-	switch SectionType(_typ) {
+	// parse section
+	switch SectionType(typ) {
 	case MarkupSection:
 		return parseMarkupSection(section, markups, atoms)
 	case ImageSection:
@@ -294,7 +291,7 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	// prepare section
 	s := Section{Type: MarkupSection}
 
-	// validate length
+	// check length
 	if len(section) != 3 {
 		return s, fmt.Errorf("invalid markup section definition")
 	}
@@ -324,15 +321,15 @@ func parseMarkupSection(section List, markups []Markup, atoms []Atom) (Section, 
 	// allocate markers
 	s.Markers = make([]Marker, 0, len(items))
 
-	// validate markers
-	for _, item := range items {
-		// coerce item
-		marker, ok := toList(item)
+	// parse markers
+	for _, value := range items {
+		// coerce value
+		marker, ok := toList(value)
 		if !ok {
 			return s, fmt.Errorf("invalid markup section marker definition")
 		}
 
-		// validate marker
+		// parse marker
 		m, openMarkups, err = parseMarker(marker, markups, atoms, openMarkups)
 		if err != nil {
 			return s, err
@@ -349,7 +346,7 @@ func parseImageSection(image List) (Section, error) {
 	// prepare section
 	s := Section{Type: ImageSection}
 
-	// validate length
+	// check length
 	if len(image) != 2 {
 		return s, fmt.Errorf("invalid image section definition")
 	}
@@ -370,7 +367,7 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	// prepare section
 	s := Section{Type: ListSection}
 
-	// validate length
+	// check length
 	if len(list) != 3 {
 		return s, fmt.Errorf("invalid list section definition")
 	}
@@ -393,10 +390,10 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 	// allocate items
 	s.Items = make([][]Marker, 0, len(items))
 
-	// validate items
-	for _, _item := range items {
+	// parse items
+	for _, value := range items {
 		// coerce value
-		item, ok := toList(_item)
+		item, ok := toList(value)
 		if !ok {
 			return s, fmt.Errorf("invalid list section item")
 		}
@@ -412,14 +409,14 @@ func parseListSection(list List, markups []Markup, atoms []Atom) (Section, error
 		list := make([]Marker, 0, len(item))
 
 		// parse markers
-		for _, _marker := range item {
+		for _, value := range item {
 			// coerce value
-			marker, ok := toList(_marker)
+			marker, ok := toList(value)
 			if !ok {
 				return s, fmt.Errorf("invalid list section item marker")
 			}
 
-			// validate marker
+			// parse marker
 			m, openMarkups, err = parseMarker(marker, markups, atoms, openMarkups)
 			if err != nil {
 				return s, err
@@ -440,7 +437,7 @@ func parseCardSection(card List, cards []Card) (Section, error) {
 	// prepare card
 	s := Section{Type: CardSection}
 
-	// validate length
+	// check length
 	if len(card) != 2 {
 		return s, fmt.Errorf("invalid card section definition")
 	}
@@ -466,25 +463,25 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	// prepare marker
 	m := Marker{}
 
-	// validate length
+	// check length
 	if len(marker) != 4 {
 		return m, 0, fmt.Errorf("invalid marker definition")
 	}
 
 	// get marker type
-	_typ, ok := toInt(marker[0])
+	typ, ok := toInt(marker[0])
 	if !ok {
 		return m, 0, fmt.Errorf("invalid marker type")
 	}
 
 	// check marker type
-	typ := MarkerType(_typ)
-	if typ != TextMarker && typ != AtomMarker {
+	markerType := MarkerType(typ)
+	if markerType != TextMarker && markerType != AtomMarker {
 		return m, 0, fmt.Errorf("invalid marker type")
 	}
 
 	// set type
-	m.Type = typ
+	m.Type = markerType
 
 	// get opened markups
 	openedMarkups, ok := toList(marker[1])
@@ -497,10 +494,10 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 		m.OpenMarkups = make([]*Markup, 0, len(openedMarkups))
 	}
 
-	// validate opened markups
-	for _, markup := range openedMarkups {
+	// parse opened markups
+	for _, value := range openedMarkups {
 		// coerce value
-		index, ok := toInt(markup)
+		index, ok := toInt(value)
 		if !ok {
 			return m, 0, fmt.Errorf("invalid marker markup index")
 		}
@@ -532,8 +529,8 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 	// set closed markups
 	m.ClosedMarkups = closedMarkups
 
-	// validate text marker
-	if typ == TextMarker {
+	// parse text marker
+	if markerType == TextMarker {
 		// get text
 		text, ok := marker[3].(string)
 		if !ok {
@@ -544,8 +541,8 @@ func parseMarker(marker List, markups []Markup, atoms []Atom, openMarkups int) (
 		m.Text = text
 	}
 
-	// validate atom marker
-	if typ == AtomMarker {
+	// parse atom marker
+	if markerType == AtomMarker {
 		// get index
 		index, ok := toInt(marker[3])
 		if !ok || index >= len(atoms) {
