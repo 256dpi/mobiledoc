@@ -2,8 +2,10 @@ package mobiledoc
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -50,8 +52,16 @@ func (d Document) MarshalJSON() ([]byte, error) {
 	return bytes, nil
 }
 
-// UnmarshalBSON implements the bson.Unmarshaler interface.
-func (d *Document) UnmarshalBSON(bytes []byte) error {
+// UnmarshalBSONValue implements the bson.ValueUnmarshaler interface.
+func (d *Document) UnmarshalBSONValue(typ bsontype.Type, bytes []byte) error {
+	// check type
+	if typ == bson.TypeNull {
+		*d = Document{}
+		return nil
+	} else if typ != 0 && typ != bson.TypeEmbeddedDocument {
+		return fmt.Errorf("unexpected type: %s", typ.String())
+	}
+
 	// unmarshal to map
 	var m Map
 	err := bson.Unmarshal(bytes, &m)
@@ -77,19 +87,37 @@ func (d *Document) UnmarshalBSON(bytes []byte) error {
 	return nil
 }
 
-// MarshalBSON implements the bson.Marshaler interface.
-func (d Document) MarshalBSON() ([]byte, error) {
+// MarshalBSONValue implements the bson.ValueMarshaler interface.
+func (d *Document) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	// handle nil
+	if d == nil {
+		return bsontype.Null, nil, nil
+	}
+
+	// handle zero
+	if isZero(*d) {
+		return bson.MarshalValue(Map{})
+	}
+
 	// compile document
-	raw, err := Compile(d)
+	raw, err := Compile(*d)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
 	// marshal map
-	bytes, err := bson.Marshal(raw)
+	val, bytes, err := bson.MarshalValue(raw)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
-	return bytes, nil
+	return val, bytes, nil
+}
+
+func isZero(d Document) bool {
+	return d.Version == "" &&
+		len(d.Markups) == 0 &&
+		len(d.Atoms) == 0 &&
+		len(d.Cards) == 0 &&
+		len(d.Sections) == 0
 }
