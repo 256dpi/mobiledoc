@@ -40,6 +40,15 @@ const sampleJSON = `{
 				[0,[],1,"<foo>"]
 			]
 		]],
+		[3,"ol",[
+			[
+				[0,[],0,"bar"],
+				[0,[1],1,"bar"]
+			],[
+				[0,[1],0,"bar"],
+				[0,[],1,"<bar>"]
+			]
+		]],
 		[10,1]
 	]
 }`
@@ -84,6 +93,16 @@ func sampleMap() Map {
 				List{
 					List{TextMarker, List{0}, 0, "foo"},
 					List{TextMarker, List{}, 1, "<foo>"},
+				},
+			}},
+			List{ListSection, "ol", List{
+				List{
+					List{TextMarker, List{}, 0, "bar"},
+					List{TextMarker, List{1}, 1, "bar"},
+				},
+				List{
+					List{TextMarker, List{1}, 0, "bar"},
+					List{TextMarker, List{}, 1, "<bar>"},
 				},
 			}},
 			List{CardSection, 1},
@@ -132,6 +151,16 @@ func sampleDoc() Document {
 			{
 				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[0]}, Text: "foo"},
 				{Type: TextMarker, ClosedMarkups: 1, Text: "<foo>"},
+			},
+		}},
+		{Type: ListSection, Tag: "ol", Items: [][]Marker{
+			{
+				{Type: TextMarker, ClosedMarkups: 0, Text: "bar"},
+				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[1]}, ClosedMarkups: 1, Text: "bar"},
+			},
+			{
+				{Type: TextMarker, OpenMarkups: []*Markup{&doc.Markups[1]}, Text: "bar"},
+				{Type: TextMarker, ClosedMarkups: 1, Text: "<bar>"},
 			},
 		}},
 		{Type: 10, Card: &doc.Cards[1]},
