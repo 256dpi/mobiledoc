@@ -8,7 +8,11 @@ import (
 
 func TestFormatValidator(t *testing.T) {
 	v := NewFormatValidator()
-	err := v.Validate(sampleDoc())
+
+	err := v.Validate(minimalDoc())
+	assert.NoError(t, err)
+
+	err = v.Validate(sampleDoc())
 	assert.NoError(t, err)
 }
 

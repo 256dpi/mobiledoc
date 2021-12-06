@@ -1,5 +1,17 @@
 package mobiledoc
 
+const minimalJSON = `{
+	"version":"0.3.1",
+	"markups":[],
+	"atoms":[],
+	"cards":[],
+	"sections":[
+		[1,"p",[
+			[0,[],0,"Hello world!"]
+		]]
+	]
+}`
+
 const sampleJSON = `{
 	"version":"0.3.1",
 	"markups":[
@@ -52,6 +64,29 @@ const sampleJSON = `{
 		[10,1]
 	]
 }`
+
+func minimalMap() Map {
+	return Map{
+		"version": Version,
+		"markups": List{},
+		"atoms":   List{},
+		"cards":   List{},
+		"sections": List{
+			List{
+				MarkupSection,
+				"p",
+				List{
+					List{
+						TextMarker,
+						List{},
+						0,
+						"Hello world!",
+					},
+				},
+			},
+		},
+	}
+}
 
 func sampleMap() Map {
 	return Map{
@@ -106,6 +141,29 @@ func sampleMap() Map {
 				},
 			}},
 			List{CardSection, 1},
+		},
+	}
+}
+
+func minimalDoc() Document {
+	return Document{
+		Version: Version,
+		Markups: []Markup{},
+		Atoms:   []Atom{},
+		Cards:   []Card{},
+		Sections: []Section{
+			{
+				Type: MarkupSection,
+				Tag:  "p",
+				Markers: []Marker{
+					{
+						Type:          TextMarker,
+						OpenMarkups:   nil,
+						ClosedMarkups: 0,
+						Text:          "Hello world!",
+					},
+				},
+			},
 		},
 	}
 }

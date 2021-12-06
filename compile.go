@@ -193,6 +193,11 @@ func (c *compiler) mapToList(m Map) List {
 }
 
 func (c *compiler) allocate(length int) List {
+	// check empty
+	if length == 0 {
+		return List{}
+	}
+
 	// check big list
 	if length > scratchSize {
 		return make(List, length)

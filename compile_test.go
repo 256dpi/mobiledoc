@@ -7,7 +7,11 @@ import (
 )
 
 func TestCompile(t *testing.T) {
-	m, err := Compile(sampleDoc())
+	m, err := Compile(minimalDoc())
+	assert.NoError(t, err)
+	assert.Equal(t, minimalMap(), m)
+
+	m, err = Compile(sampleDoc())
 	assert.NoError(t, err)
 	assert.Equal(t, sampleMap(), m)
 }

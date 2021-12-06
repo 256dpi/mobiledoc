@@ -9,27 +9,36 @@ import (
 
 func TestParseJSON(t *testing.T) {
 	var in Map
-	err := json.Unmarshal([]byte(sampleJSON), &in)
+	err := json.Unmarshal([]byte(minimalJSON), &in)
 	assert.NoError(t, err)
 
 	doc, err := Parse(in)
+	assert.NoError(t, err)
+	assert.Equal(t, minimalDoc(), doc)
+
+	err = json.Unmarshal([]byte(sampleJSON), &in)
+	assert.NoError(t, err)
+
+	doc, err = Parse(in)
 	assert.NoError(t, err)
 	assert.Equal(t, sampleDoc(), doc)
 }
 
 func TestParseMap(t *testing.T) {
-	doc, err := Parse(sampleMap())
+	doc, err := Parse(minimalMap())
+	assert.NoError(t, err)
+	assert.Equal(t, minimalDoc(), doc)
+
+	doc, err = Parse(sampleMap())
 	assert.NoError(t, err)
 	assert.Equal(t, sampleDoc(), doc)
 }
 
-func TestParseNil(t *testing.T) {
+func TestParseNilAndMissing(t *testing.T) {
 	doc, err := Parse(Map{
-		"version":  Version,
-		"markups":  nil,
-		"atoms":    nil,
-		"cards":    nil,
-		"sections": nil,
+		"version": Version,
+		"markups": nil,
+		"atoms":   nil,
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, Document{Version: Version}, doc)
