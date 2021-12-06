@@ -14,6 +14,16 @@ func TestCompile(t *testing.T) {
 	m, err = Compile(sampleDoc())
 	assert.NoError(t, err)
 	assert.Equal(t, sampleMap(), m)
+
+	m, err = Compile(Document{Version: Version})
+	assert.NoError(t, err)
+	assert.Equal(t, Map{
+		"version":  Version,
+		"markups":  List{},
+		"atoms":    List{},
+		"cards":    List{},
+		"sections": List{},
+	}, m)
 }
 
 func BenchmarkCompile(b *testing.B) {
