@@ -95,7 +95,7 @@ func (d *Document) MarshalBSONValue() (bsontype.Type, []byte, error) {
 	}
 
 	// handle zero
-	if isZero(*d) {
+	if d.IsZero() {
 		return bson.MarshalValue(Map{})
 	}
 
@@ -114,10 +114,8 @@ func (d *Document) MarshalBSONValue() (bsontype.Type, []byte, error) {
 	return val, bytes, nil
 }
 
-func isZero(d Document) bool {
-	return d.Version == "" &&
-		len(d.Markups) == 0 &&
-		len(d.Atoms) == 0 &&
-		len(d.Cards) == 0 &&
-		len(d.Sections) == 0
+// IsZero returns true if the document is nil or empty.
+func (d *Document) IsZero() bool {
+	return d == nil || (d.Version == "" && len(d.Markups) == 0 &&
+		len(d.Atoms) == 0 && len(d.Cards) == 0 && len(d.Sections) == 0)
 }
