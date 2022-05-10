@@ -15,7 +15,11 @@ func ConvertText(str string) Document {
 
 	// prepare doc
 	doc := Document{
-		Version: Version,
+		Version:  Version,
+		Markups:  []Markup{},
+		Atoms:    []Atom{},
+		Cards:    []Card{},
+		Sections: []Section{},
 	}
 
 	// add sections

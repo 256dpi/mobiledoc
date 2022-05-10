@@ -11,6 +11,9 @@ func TestConvertText(t *testing.T) {
 	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
+		Markups: []Markup{},
+		Atoms:   []Atom{},
+		Cards:   []Card{},
 		Sections: []Section{
 			{
 				Type: MarkupSection,
@@ -29,6 +32,9 @@ func TestConvertText(t *testing.T) {
 	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
+		Markups: []Markup{},
+		Atoms:   []Atom{},
+		Cards:   []Card{},
 		Sections: []Section{
 			{
 				Type: MarkupSection,
@@ -47,6 +53,9 @@ func TestConvertText(t *testing.T) {
 	assert.NoError(t, formatValidator.Validate(doc))
 	assert.Equal(t, Document{
 		Version: Version,
+		Markups: []Markup{},
+		Atoms:   []Atom{},
+		Cards:   []Card{},
 		Sections: []Section{
 			{
 				Type: MarkupSection,
