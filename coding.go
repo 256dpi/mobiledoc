@@ -2,7 +2,6 @@ package mobiledoc
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
@@ -52,16 +51,8 @@ func (d Document) MarshalJSON() ([]byte, error) {
 	return bytes, nil
 }
 
-// UnmarshalBSONValue implements the bson.ValueUnmarshaler interface.
-func (d *Document) UnmarshalBSONValue(typ bsontype.Type, bytes []byte) error {
-	// check type
-	if typ == bson.TypeNull {
-		*d = Document{}
-		return nil
-	} else if typ != 0 && typ != bson.TypeEmbeddedDocument {
-		return fmt.Errorf("unexpected type: %s", typ.String())
-	}
-
+// UnmarshalBSON implements the bson.Unmarshaler interface.
+func (d *Document) UnmarshalBSON(bytes []byte) error {
 	// unmarshal to map
 	var m Map
 	err := bson.Unmarshal(bytes, &m)

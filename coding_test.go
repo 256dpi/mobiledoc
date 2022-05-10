@@ -80,7 +80,7 @@ func TestBSONNil(t *testing.T) {
 	var doc docStruct
 	err = bson.Unmarshal(in, &doc)
 	require.NoError(t, err)
-	// assert.Nil(t, doc.Doc) // TODO: Should be nil.
+	assert.Nil(t, doc.Doc)
 
 	out, err := bson.Marshal(doc)
 	require.NoError(t, err)
@@ -89,7 +89,7 @@ func TestBSONNil(t *testing.T) {
 	err = bson.Unmarshal(out, &res)
 	require.NoError(t, err)
 	equalMaps(t, res, Map{
-		"doc": Map{},
+		"doc": nil,
 	})
 }
 
